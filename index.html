@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Designed by Mozahid</title>
+    <title>reben</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -127,7 +127,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        /* ── inputs ── */
+        /* ── inputs (yellow/gold completely removed) ── */
         .premium-input {
             background: #f8fafc;
             border: 1px solid #e5e7eb;
@@ -140,7 +140,7 @@
         }
         .premium-input:focus {
             border-color: #fc0404;
-            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+            box-shadow: none;
             background: #ffffff;
             outline: none;
         }
@@ -329,6 +329,42 @@
             border-radius: 8px;
         }
 
+        /* ── toast notification ── */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1f2937;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        .toast.error {
+            border-left: 4px solid #dc2626;
+        }
+        .toast i {
+            font-size: 18px;
+        }
+
         /* ── print ── */
         @media print {
             body {
@@ -341,7 +377,8 @@
             header button,
             #filterForm,
             #monthTagsContainer,
-            #refreshBtn {
+            #refreshBtn,
+            .toast {
                 display: none !important;
             }
             .premium-table thead th {
@@ -383,10 +420,33 @@
             .kpi-icon i {
                 font-size: 14px !important;
             }
+            .toast {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* ── accessibility: focus-visible (no yellow for station input) ── */
+        .month-tag:focus-visible,
+        .sync-btn:focus-visible {
+            outline: 2px solid #d4a843;
+            outline-offset: 2px;
+        }
+        .premium-input:focus-visible {
+            outline: none;
         }
     </style>
 </head>
 <body>
+
+    <!-- ─── TOAST NOTIFICATION ─── -->
+    <div id="toast" class="toast" role="alert" aria-live="polite">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">Data synced successfully!</span>
+    </div>
 
     <!-- ─── HEADER ─── -->
     <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -408,12 +468,12 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <div id="syncStatus" class="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-gray-50 border border-gray-200 text-xs">
-                    <span class="status-dot" id="statusDot"></span>
+                <div id="syncStatus" class="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-gray-50 border border-gray-200 text-xs" role="status" aria-live="polite">
+                    <span class="status-dot" id="statusDot" aria-hidden="true"></span>
                     <span id="statusText" class="font-medium text-gray-500">Connecting…</span>
                 </div>
-                <button id="refreshBtn" onclick="fetchGoogleSheetData()" class="sync-btn">
-                    <i class="fa-solid fa-rotate text-xs"></i>
+                <button id="refreshBtn" onclick="fetchGoogleSheetData()" class="sync-btn" aria-label="Synchronize data from Google Sheets">
+                    <i class="fa-solid fa-rotate text-xs" aria-hidden="true"></i>
                     <span class="hidden sm:inline">Sync Data</span>
                 </button>
             </div>
@@ -424,10 +484,10 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 space-y-8">
 
         <!-- ─── Error Banner ─── -->
-        <section id="errorBanner" class="hidden error-banner flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-500">
+        <section id="errorBanner" class="hidden error-banner flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-500" role="alert" aria-live="assertive">
             <div class="flex items-start gap-4">
                 <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i class="fa-solid fa-triangle-exclamation text-red-600 text-sm"></i>
+                    <i class="fa-solid fa-triangle-exclamation text-red-600 text-sm" aria-hidden="true"></i>
                 </div>
                 <div>
                     <h4 class="font-bold text-sm text-gray-800">Connection Error</h4>
@@ -435,8 +495,11 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 text-xs flex-shrink-0">
+                <button onclick="fetchGoogleSheetData()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors font-medium">
+                    <i class="fa-solid fa-rotate" aria-hidden="true"></i> Retry
+                </button>
                 <a href="https://docs.google.com/spreadsheets/d/1rHJqswt7GvXVG3ZuDZ5zMtqKiLy0PsHMyDBeWA15ABs" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors font-medium">
-                    <i class="fa-solid fa-arrow-up-right-from-square text-brand-gold/60 text-[10px]"></i> Open Sheet
+                    <i class="fa-solid fa-arrow-up-right-from-square text-brand-gold/60 text-[10px]" aria-hidden="true"></i> Open Sheet
                 </a>
             </div>
         </section>
@@ -453,10 +516,10 @@
             <!-- station search -->
             <form id="filterForm" class="grid grid-cols-1 gap-5" onsubmit="event.preventDefault(); updateDashboard();">
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2.5 flex items-center gap-2">
-                        <i class="fa-solid fa-location-dot text-brand-gold text-xs"></i> Station Name
+                    <label for="stationInput" class="block text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2.5 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-brand-gold text-xs" aria-hidden="true"></i> Station Name
                     </label>
-                    <input type="text" id="stationInput" list="stationsList" placeholder="Search by station name…" class="premium-input" oninput="updateDashboard()" />
+                    <input type="text" id="stationInput" list="stationsList" placeholder="Search by station name…" class="premium-input" aria-label="Filter by station name" />
                     <datalist id="stationsList"></datalist>
                 </div>
             </form>
@@ -465,15 +528,15 @@
             <div class="pt-5 mt-4 border-t border-gray-200">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em] flex items-center gap-2">
-                        <i class="fa-regular fa-calendar text-brand-gold"></i> Active Months
-                        <span class="text-brand-gold font-bold ml-1" id="activeCount">0</span>
+                        <i class="fa-regular fa-calendar text-brand-gold" aria-hidden="true"></i> Active Months
+                        <span class="text-brand-gold font-bold ml-1" id="activeCount" aria-live="polite">0</span>
                     </span>
                     <div class="flex items-center gap-3">
-                        <button onclick="toggleAllMonths(true)" class="text-xs text-brand-gold hover:text-brand-goldDark font-semibold transition-colors">Select All</button>
-                        <button onclick="toggleAllMonths(false)" class="text-xs text-gray-400 hover:text-gray-600 font-semibold transition-colors">Clear</button>
+                        <button onclick="toggleAllMonths(true)" class="text-xs text-brand-gold hover:text-brand-goldDark font-semibold transition-colors" aria-label="Select all months">Select All</button>
+                        <button onclick="toggleAllMonths(false)" class="text-xs text-gray-400 hover:text-gray-600 font-semibold transition-colors" aria-label="Clear all months">Clear</button>
                     </div>
                 </div>
-                <div id="monthTagsContainer" class="flex flex-wrap gap-2.5">
+                <div id="monthTagsContainer" class="flex flex-wrap gap-2.5" role="group" aria-label="Month selection">
                     <!-- rendered by JS -->
                 </div>
             </div>
@@ -489,7 +552,7 @@
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Fuel Volume</p>
                         <h3 id="kpiTotalSales" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">0 LTR</h3>
                     </div>
-                    <div class="kpi-icon">
+                    <div class="kpi-icon" aria-hidden="true">
                         <i class="fa-solid fa-gas-pump text-lg"></i>
                     </div>
                 </div>
@@ -504,7 +567,7 @@
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Expenses</p>
                         <h3 id="kpiTotalExpenses" class="text-2xl font-black text-brand-crimson mt-2 tracking-tight">SAR 0</h3>
                     </div>
-                    <div class="kpi-icon">
+                    <div class="kpi-icon" aria-hidden="true">
                         <i class="fa-solid fa-receipt text-lg"></i>
                     </div>
                 </div>
@@ -519,7 +582,7 @@
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Salary</p>
                         <h3 id="kpiTotalSalary" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">SAR 0</h3>
                     </div>
-                    <div class="kpi-icon">
+                    <div class="kpi-icon" aria-hidden="true">
                         <i class="fa-solid fa-users text-lg"></i>
                     </div>
                 </div>
@@ -534,7 +597,7 @@
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Monthly Avg Volume</p>
                         <h3 id="kpiAvgSales" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">0 LTR</h3>
                     </div>
-                    <div class="kpi-icon">
+                    <div class="kpi-icon" aria-hidden="true">
                         <i class="fa-solid fa-chart-line text-lg"></i>
                     </div>
                 </div>
@@ -545,14 +608,14 @@
         <!-- ─── MULTI-MONTH BANNER ─── -->
         <section id="multiMonthBanner" class="card-premium px-6 py-4 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center flex-shrink-0" aria-hidden="true">
                     <i class="fa-regular fa-calendar-range text-brand-gold text-sm"></i>
                 </div>
                 <span class="text-sm text-gray-500 font-medium">
                     Selected Months: <strong id="activeMonthsLabel" class="text-gray-800 font-bold">None Selected</strong>
                 </span>
             </div>
-            <span id="monthSpanBadge" class="font-mono text-xs px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-bold">
+            <span id="monthSpanBadge" class="font-mono text-xs px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-bold" aria-live="polite">
                 0 Months
             </span>
         </section>
@@ -567,12 +630,12 @@
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Cumulative Fuel Share</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Breakdown by grade</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
                         <i class="fa-regular fa-chart-pie"></i>
                     </div>
                 </div>
                 <div class="relative h-[280px] flex items-center justify-center">
-                    <canvas id="fuelShareChart"></canvas>
+                    <canvas id="fuelShareChart" aria-label="Fuel share donut chart"></canvas>
                 </div>
             </div>
 
@@ -583,12 +646,12 @@
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume &amp; Expenses Trend</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Grade volumes vs total expenses</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
                         <i class="fa-regular fa-chart-bar"></i>
                     </div>
                 </div>
                 <div class="relative h-[280px]">
-                    <canvas id="monthlyGradeBarChart"></canvas>
+                    <canvas id="monthlyGradeBarChart" aria-label="Monthly grade bar chart with expenses line"></canvas>
                 </div>
             </div>
 
@@ -599,12 +662,12 @@
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Monthly Expense Breakdown</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Salary · Transport · Other</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
                         <i class="fa-regular fa-coins"></i>
                     </div>
                 </div>
                 <div class="relative h-[280px]">
-                    <canvas id="monthlyExpenseBarChart"></canvas>
+                    <canvas id="monthlyExpenseBarChart" aria-label="Monthly expense breakdown bar chart"></canvas>
                 </div>
             </div>
 
@@ -615,12 +678,12 @@
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume vs Expense Trend</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Total volume &amp; total expenses</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
                         <i class="fa-regular fa-chart-scatter"></i>
                     </div>
                 </div>
                 <div class="relative h-[280px]">
-                    <canvas id="monthlyTrendChart"></canvas>
+                    <canvas id="monthlyTrendChart" aria-label="Volume versus expense trend chart"></canvas>
                 </div>
             </div>
 
@@ -631,15 +694,15 @@
             <div class="px-6 py-4 border-b border-gray-200 flex flex-wrap justify-between items-center gap-3 bg-gray-50">
                 <div>
                     <h2 class="text-sm font-bold text-gray-800 tracking-wide">Aggregated Station Records</h2>
-                    <p class="text-[11px] text-gray-400 font-medium mt-0.5" id="tableRecordCount">Showing 0 entries</p>
+                    <p class="text-[11px] text-gray-400 font-medium mt-0.5" id="tableRecordCount" aria-live="polite">Showing 0 entries</p>
                 </div>
                 <div class="flex items-center gap-2 text-xs text-gray-400">
-                    <i class="fa-regular fa-table"></i>
+                    <i class="fa-regular fa-table" aria-hidden="true"></i>
                     <span>Live data</span>
                 </div>
             </div>
             <div class="table-scroll">
-                <table class="premium-table">
+                <table class="premium-table" aria-label="Station records table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -669,7 +732,10 @@
 
     <script>
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  PRESERVED LOGIC – all functionality intact
+        //  IMPROVEMENTS ADDED (ONLY):
+        //  1. Better Error Handling & User Feedback (toast + retry button)
+        //  2. Accessibility & Keyboard Navigation (ARIA labels, focus-visible)
+        //  3. Performance Tweak (debounce station input, requestAnimationFrame)
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         const MONTHS_ORDER = [
@@ -683,6 +749,15 @@
         let monthlyGradeBarChart = null;
         let monthlyExpenseBarChart = null;
         let monthlyTrendChart = null;
+
+        // ─── Debounce helper (Performance Tweak) ───
+        function debounce(fn, delay) {
+            let timer = null;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
 
         const COLOR_91 = '#22c55e';
         const COLOR_95 = '#ef4444';
@@ -707,16 +782,39 @@
             return isNaN(num) ? 0 : num;
         };
 
+        // ─── Toast notification (User Feedback) ───
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            toast.className = 'toast';
+            if (type === 'success') {
+                toast.classList.add('success');
+                icon.className = 'fa-solid fa-circle-check text-emerald-400';
+            } else {
+                toast.classList.add('error');
+                icon.className = 'fa-solid fa-circle-exclamation text-red-400';
+            }
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
         function showErrorBanner(msg) {
             const banner = document.getElementById('errorBanner');
             document.getElementById('errorMessageText').innerHTML = msg;
             banner.classList.remove('hidden');
+            showToast('Data sync failed. Check the banner for details.', 'error');
         }
 
         function hideErrorBanner() {
             document.getElementById('errorBanner').classList.add('hidden');
         }
 
+        // ─── Render month tags with keyboard support (Accessibility) ───
         function renderMonthTags() {
             const container = document.getElementById('monthTagsContainer');
             container.innerHTML = '';
@@ -724,10 +822,23 @@
                 const checked = selectedMonths.includes(m);
                 const tag = document.createElement('label');
                 tag.className = `month-tag ${checked ? 'active' : ''}`;
+                tag.setAttribute('role', 'checkbox');
+                tag.setAttribute('aria-checked', checked ? 'true' : 'false');
+                tag.setAttribute('tabindex', '0');
+                tag.setAttribute('aria-label', `Toggle month ${m}`);
                 tag.innerHTML = `
-                    <input type="checkbox" value="${m}" ${checked ? 'checked' : ''} onchange="toggleMonth('${m}')" class="hidden">
+                    <input type="checkbox" value="${m}" ${checked ? 'checked' : ''} onchange="toggleMonth('${m}')" class="hidden" tabindex="-1" aria-hidden="true">
                     <span>${m.substring(0, 3)}</span>
                 `;
+                // Keyboard: Space or Enter to toggle
+                tag.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        const cb = tag.querySelector('input[type="checkbox"]');
+                        cb.checked = !cb.checked;
+                        cb.dispatchEvent(new Event('change'));
+                    }
+                });
                 container.appendChild(tag);
             });
             document.getElementById('activeCount').textContent = selectedMonths.length;
@@ -749,6 +860,7 @@
             updateDashboard();
         }
 
+        // ─── Fetch data with toast feedback (User Feedback) ───
         async function fetchGoogleSheetData() {
             hideErrorBanner();
             const dot = document.getElementById('statusDot');
@@ -757,7 +869,10 @@
             const sheetId = document.getElementById('sheetIdInput').value.trim();
             const tabName = document.getElementById('tabNameInput').value.trim() || 'Master';
 
-            if (!sheetId) { showErrorBanner('Please enter a valid Google Sheet ID.'); return; }
+            if (!sheetId) {
+                showErrorBanner('Please enter a valid Google Sheet ID.');
+                return;
+            }
 
             dot.className = 'status-dot connecting';
             txt.textContent = `Fetching ‘${tabName}’…`;
@@ -824,6 +939,7 @@
 
                 dot.className = 'status-dot';
                 txt.textContent = `Connected (${rawDataset.length} records)`;
+                showToast(`Loaded ${rawDataset.length} records successfully!`, 'success');
 
                 populateDatalist();
                 updateDashboard();
@@ -981,6 +1097,13 @@
             });
         }
 
+        // ─── Update dashboard with performance tweaks ───
+        // Debounced station input (Performance Tweak)
+        const stationInput = document.getElementById('stationInput');
+        stationInput.addEventListener('input', debounce(function() {
+            updateDashboard();
+        }, 300));
+
         function updateDashboard() {
             const query = document.getElementById('stationInput').value.trim().toLowerCase();
 
@@ -991,10 +1114,13 @@
                 return matchStation && matchMonth;
             });
 
-            renderTable(filtered);
-            renderKPIs(filtered);
-            renderCharts(filtered);
-            updateMultiMonthBanner();
+            // Use requestAnimationFrame to batch DOM updates (Performance Tweak)
+            requestAnimationFrame(() => {
+                renderTable(filtered);
+                renderKPIs(filtered);
+                renderCharts(filtered);
+                updateMultiMonthBanner();
+            });
         }
 
         function updateMultiMonthBanner() {

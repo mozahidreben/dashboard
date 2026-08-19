@@ -1,855 +1,1156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fuel Station Executive Management Dashboard</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              red: '#dc2626',
-              redHover: '#b91c1c',
-              green: '#16a34a',
-              yellow: '#ca8a04',
-              darkText: '#0f172a',
-              cardBg: '#ffffff',
-              borderLight: '#e2e8f0',
-              bgLight: '#f1f5f9'
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Designed by Mozahid</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#dc2626',
+                            goldLight: '#f0d68a',
+                            goldDark: '#b8922f',
+                            crimson: '#dc2626',
+                            crimsonLight: '#fca5a5',
+                            emerald: '#10b981',
+                            navy: '#0b1426',
+                            slate: '#4b5563',
+                            slateLight: '#9ca3af',
+                            lightBg: '#f8fafc',
+                            cardBg: '#ffffff',
+                            borderLight: '#e5e7eb',
+                            textPrimary: '#111827',
+                            textSecondary: '#4b5563',
+                            textMuted: '#6b7280',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
+                        'premium-lg': '0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+                        'glow-gold': '0 0 20px rgba(212,168,67,0.15)',
+                        'glow-crimson': '0 0 20px rgba(220,38,38,0.08)',
+                    },
+                }
             }
-          }
         }
-      }
-    }
-  </script>
-  <style>
-    body {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #dc2626 !important;
-      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
-    }
-  </style>
+    </script>
+
+    <style>
+        /* ── base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: #111827;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4a843;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b8922f;
+        }
+
+        /* ── header glow ── */
+        .header-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #dc2626, #dc2626, #e7e6e4, transparent);
+            border-radius: 4px;
+            filter: blur(1px);
+        }
+
+        /* ── gold line ── */
+        .gold-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #26dc3e, #b8922f, #2803f7, transparent);
+            border-radius: 4px;
+            filter: blur(0.5px);
+        }
+
+        /* ── cards ── */
+        .card-premium {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+        .card-premium:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-color: #d4a84340;
+        }
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ── inputs ── */
+        .premium-input {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 500;
+            width: 100%;
+        }
+        .premium-input:focus {
+            border-color: #fc0404;
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+            background: #ffffff;
+            outline: none;
+        }
+        .premium-input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* ── month tags ── */
+        .month-tag {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #4b5563;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .month-tag:hover {
+            border-color: #d4a843;
+            color: #111827;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .month-tag.active {
+            background: #d4a843;
+            border-color: #d4a843;
+            color: #ffffff;
+            box-shadow: 0 2px 12px rgba(212, 168, 67, 0.2);
+        }
+        .month-tag.active:hover {
+            background: #b8922f;
+            border-color: #b8922f;
+        }
+
+        /* ── table ── */
+        .premium-table {
+            min-width: 1100px;
+            width: 100%;
+        }
+        .premium-table thead th {
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 10px;
+            padding: 10px 12px;
+            white-space: nowrap;
+        }
+        .premium-table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+        .premium-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .premium-table tbody td {
+            padding: 10px 12px;
+            color: #111827;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .premium-table tfoot td {
+            padding: 10px 12px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #d4a843;
+            border-radius: 10px;
+        }
+
+        /* ── KPI icon ── */
+        .kpi-icon {
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4b5563;
+            flex-shrink: 0;
+        }
+        .kpi-icon:hover {
+            background: #d4a84310;
+            border-color: #d4a843;
+            color: #d4a843;
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        /* ── status dot ── */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+            animation: pulse-dot 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .status-dot.connecting {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+        }
+        .status-dot.error {
+            background: #dc2626;
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.2);
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.85);
+            }
+        }
+
+        /* ── sync button ── */
+        .sync-btn {
+            background: linear-gradient(135deg, #dd2626, #e64f0a);
+            border: none;
+            color: #ffffff;
+            padding: 8px 22px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 12px rgba(212, 168, 67, 0.2);
+            cursor: pointer;
+        }
+        .sync-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
+        }
+        .sync-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ── error banner ── */
+        .error-banner {
+            border-left: 4px solid #dc2626;
+            background: #fef2f2;
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        /* ── chart containers ── */
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 280px;
+        }
+
+        /* ── logo ── */
+        .logo-img {
+            height: 44px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        /* ── print ── */
+        @media print {
+            body {
+                background: #ffffff !important;
+            }
+            .card-premium {
+                border-color: #d1d5db !important;
+                box-shadow: none !important;
+            }
+            header button,
+            #filterForm,
+            #monthTagsContainer,
+            #refreshBtn {
+                display: none !important;
+            }
+            .premium-table thead th {
+                color: #111827 !important;
+                border-bottom-color: #d1d5db !important;
+            }
+            .premium-table tbody td {
+                color: #111827 !important;
+            }
+            .month-tag {
+                background: #f3f4f6 !important;
+                border-color: #d1d5db !important;
+                color: #111827 !important;
+            }
+            .month-tag.active {
+                background: #d4a843 !important;
+                color: #ffffff !important;
+                border-color: #d4a843 !important;
+            }
+        }
+
+        /* ── responsive tweaks ── */
+        @media (max-width: 640px) {
+            .premium-table tbody td {
+                font-size: 11px;
+                padding: 8px 8px;
+            }
+            .premium-table thead th {
+                font-size: 9px;
+                padding: 8px 8px;
+            }
+            .premium-table {
+                min-width: 900px;
+            }
+            .kpi-icon {
+                width: 36px;
+                height: 36px;
+            }
+            .kpi-icon i {
+                font-size: 14px !important;
+            }
+        }
+    </style>
 </head>
-<body class="min-h-screen font-sans antialiased pb-12">
+<body>
 
-  <!-- Executive Header -->
-  <header class="border-b border-brand-borderLight bg-brand-cardBg sticky top-0 z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="p-2.5 bg-brand-red/10 text-brand-red rounded-xl border border-brand-red/20 shadow-xs">
-          <i class="fa-solid fa-gas-pump text-xl"></i>
+    <!-- ─── HEADER ─── -->
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+            <div class="header-glow absolute bottom-0 left-0 w-full"></div>
+
+            <div class="flex items-center gap-4">
+                <!-- Company Logo -->
+                <img src="company-logo.png" alt="Company Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/160x48/f8fafc/d4a843?text=LOGO';" />
+                <div class="hidden sm:block border-l border-gray-200 pl-4">
+                    <h1 class="font-display text-xl font-bold tracking-tight text-gray-800">
+                        Reben<span class="text-brand-gold"></span>
+                    </h1>
+                    <p class="text-[10px] font-medium text-gray-400 tracking-[0.15em] uppercase">Designed by Mozahid</p>
+                </div>
+                <div class="sm:hidden">
+                    <h1 class="font-display text-base font-bold text-gray-800">Fuel<span class="text-brand-gold">·</span>Exec</h1>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div id="syncStatus" class="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-gray-50 border border-gray-200 text-xs">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText" class="font-medium text-gray-500">Connecting…</span>
+                </div>
+                <button id="refreshBtn" onclick="fetchGoogleSheetData()" class="sync-btn">
+                    <i class="fa-solid fa-rotate text-xs"></i>
+                    <span class="hidden sm:inline">Sync Data</span>
+                </button>
+            </div>
         </div>
-        <div>
-          <h1 class="font-bold text-base sm:text-lg leading-none text-brand-darkText tracking-tight">Fuel Station Executive Dashboard</h1>
-          <p class="text-xs text-slate-500 mt-1">Master Operations & Financial Analytics Report</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-3">
-        <span id="syncStatus" class="text-xs px-3.5 py-1.5 rounded-full bg-slate-50 text-slate-700 border border-brand-borderLight flex items-center gap-2 shadow-xs">
-          <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse" id="statusDot"></span>
-          <span id="statusText">Connecting...</span>
-        </span>
-        <button id="refreshBtn" onclick="fetchGoogleSheetData()" class="text-xs bg-brand-red hover:bg-brand-redHover text-white font-semibold py-2 px-4 rounded-xl transition flex items-center gap-2 shadow-md shadow-brand-red/20 active:scale-95">
-          <i class="fa-solid fa-rotate text-xs"></i> Sync Sheet
-        </button>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+    <!-- ─── MAIN ─── -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 space-y-8">
 
-    <!-- Diagnostic Warning Banner -->
-    <section id="errorBanner" class="hidden bg-red-50 border border-red-200 rounded-2xl p-4 text-red-900 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
-      <div class="flex items-start gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-brand-red text-xl mt-0.5"></i>
-        <div>
-          <h4 class="font-bold text-red-950 text-sm">Google Sheets Connection Error</h4>
-          <p id="errorMessageText" class="mt-0.5 text-red-800">Unable to pull data from tab 'Master'.</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 text-xs">
-        <a href="https://docs.google.com/spreadsheets/d/1rHJqswt7GvXVG3ZuDZ5zMtqKiLy0PsHMyDBeWA15ABs" target="_blank" class="bg-brand-red hover:bg-brand-redHover text-white px-3.5 py-1.5 rounded-lg transition font-medium shadow-xs">
-          <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Open Google Sheet
-        </a>
-      </div>
-    </section>
+        <!-- ─── Error Banner ─── -->
+        <section id="errorBanner" class="hidden error-banner flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-500">
+            <div class="flex items-start gap-4">
+                <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fa-solid fa-triangle-exclamation text-red-600 text-sm"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-gray-800">Connection Error</h4>
+                    <p id="errorMessageText" class="mt-0.5 text-xs text-gray-500 max-w-xl">Unable to pull data from tab 'Master'.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs flex-shrink-0">
+                <a href="https://docs.google.com/spreadsheets/d/1rHJqswt7GvXVG3ZuDZ5zMtqKiLy0PsHMyDBeWA15ABs" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors font-medium">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-brand-gold/60 text-[10px]"></i> Open Sheet
+                </a>
+            </div>
+        </section>
 
-    <!-- Controls & Filters Section -->
-    <section class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 shadow-xs space-y-5">
-      
-      <!-- Hidden Sheet Settings -->
-      <div class="hidden">
-        <input type="text" id="sheetIdInput" value="1rHJqswt7GvXVG3ZuDZ5zMtqKiLy0PsHMyDBeWA15ABs" onchange="fetchGoogleSheetData()">
-        <input type="text" id="tabNameInput" value="Master" onchange="fetchGoogleSheetData()">
-      </div>
+        <!-- ─── FILTERS ─── -->
+        <section class="card-premium p-6">
 
-      <!-- Station Search Control -->
-      <form id="filterForm" class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-1" onsubmit="event.preventDefault(); updateDashboard();">
-        <div class="sm:col-span-12">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            <i class="fa-solid fa-location-dot text-brand-red mr-1"></i> Station Name Filter
-          </label>
-          <input 
-            type="text" 
-            id="stationInput" 
-            list="stationsList" 
-            placeholder="Type or select station name..." 
-            class="w-full bg-slate-50 border border-brand-borderLight text-slate-900 rounded-xl px-4 py-3 text-sm transition shadow-inner"
-            oninput="updateDashboard()"
-          >
-          <datalist id="stationsList"></datalist>
-        </div>
-      </form>
+            <!-- hidden sheet settings -->
+            <div class="hidden">
+                <input type="text" id="sheetIdInput" value="1rHJqswt7GvXVG3ZuDZ5zMtqKiLy0PsHMyDBeWA15ABs" />
+                <input type="text" id="tabNameInput" value="Master" />
+            </div>
 
-      <!-- Active Months Multi-Check Tag Cloud -->
-      <div class="pt-4 border-t border-brand-borderLight">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs text-slate-600 font-bold uppercase tracking-wider">Active Months Filter (<span id="activeCount" class="text-brand-red">0</span> selected):</span>
-          <div class="flex items-center gap-3">
-            <button onclick="toggleAllMonths(true)" class="text-xs text-brand-red font-semibold hover:underline">Select All</button>
-            <button onclick="toggleAllMonths(false)" class="text-xs text-slate-500 font-semibold hover:underline">Clear All</button>
-          </div>
-        </div>
-        <div id="monthTagsContainer" class="flex flex-wrap gap-2">
-          <!-- Dynamically Generated Month Checkboxes/Tags -->
-        </div>
-      </div>
+            <!-- station search -->
+            <form id="filterForm" class="grid grid-cols-1 gap-5" onsubmit="event.preventDefault(); updateDashboard();">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2.5 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-brand-gold text-xs"></i> Station Name
+                    </label>
+                    <input type="text" id="stationInput" list="stationsList" placeholder="Search by station name…" class="premium-input" oninput="updateDashboard()" />
+                    <datalist id="stationsList"></datalist>
+                </div>
+            </form>
 
-    </section>
+            <!-- month tags -->
+            <div class="pt-5 mt-4 border-t border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em] flex items-center gap-2">
+                        <i class="fa-regular fa-calendar text-brand-gold"></i> Active Months
+                        <span class="text-brand-gold font-bold ml-1" id="activeCount">0</span>
+                    </span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleAllMonths(true)" class="text-xs text-brand-gold hover:text-brand-goldDark font-semibold transition-colors">Select All</button>
+                        <button onclick="toggleAllMonths(false)" class="text-xs text-gray-400 hover:text-gray-600 font-semibold transition-colors">Clear</button>
+                    </div>
+                </div>
+                <div id="monthTagsContainer" class="flex flex-wrap gap-2.5">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+        </section>
 
-    <!-- KPI Summary Cards -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 relative overflow-hidden shadow-xs hover:shadow-md transition">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Fuel Volume</p>
-            <h3 id="kpiTotalSales" class="text-2xl font-black text-slate-900 mt-2">0 LTR</h3>
-          </div>
-          <div class="p-3.5 bg-slate-900 text-white rounded-xl shadow-xs">
-            <i class="fa-solid fa-gas-pump text-lg"></i>
-          </div>
-        </div>
-        <p class="text-xs text-slate-500 mt-3 flex items-center gap-1.5"><i class="fa-solid fa-chart-pie text-slate-400"></i> Filtered period total volume</p>
-      </div>
+        <!-- ─── KPI CARDS ─── -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- KPI 1 -->
+            <div class="card-premium p-6 hover-lift relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="flex justify-between items-start relative">
+                    <div>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Fuel Volume</p>
+                        <h3 id="kpiTotalSales" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">0 LTR</h3>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-gas-pump text-lg"></i>
+                    </div>
+                </div>
+                <div class="gold-line mt-4 opacity-30"></div>
+            </div>
 
-      <div class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 relative overflow-hidden shadow-xs hover:shadow-md transition">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Expenses</p>
-            <h3 id="kpiTotalExpenses" class="text-2xl font-black text-amber-600 mt-2">SAR 0</h3>
-          </div>
-          <div class="p-3.5 bg-amber-500 text-white rounded-xl shadow-xs">
-            <i class="fa-solid fa-receipt text-lg"></i>
-          </div>
-        </div>
-        <p class="text-xs text-slate-500 mt-3 flex items-center gap-1.5"><i class="fa-solid fa-wallet text-slate-400"></i> Salary, Transport & Operations</p>
-      </div>
+            <!-- KPI 2 -->
+            <div class="card-premium p-6 hover-lift relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-crimson/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="flex justify-between items-start relative">
+                    <div>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Expenses</p>
+                        <h3 id="kpiTotalExpenses" class="text-2xl font-black text-brand-crimson mt-2 tracking-tight">SAR 0</h3>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-receipt text-lg"></i>
+                    </div>
+                </div>
+                <div class="gold-line mt-4 opacity-30"></div>
+            </div>
 
-      <div class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 relative overflow-hidden shadow-xs hover:shadow-md transition">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Salary</p>
-            <h3 id="kpiTotalSalary" class="text-2xl font-black text-emerald-600 mt-2">SAR 0</h3>
-          </div>
-          <div class="p-3.5 bg-emerald-600 text-white rounded-xl shadow-xs">
-            <i class="fa-solid fa-users text-lg"></i>
-          </div>
-        </div>
-        <p class="text-xs text-slate-500 mt-3 flex items-center gap-1.5"><i class="fa-solid fa-id-card text-slate-400"></i> Accumulated payroll costs</p>
-      </div>
+            <!-- KPI 3 -->
+            <div class="card-premium p-6 hover-lift relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-emerald/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="flex justify-between items-start relative">
+                    <div>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Total Salary</p>
+                        <h3 id="kpiTotalSalary" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">SAR 0</h3>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-users text-lg"></i>
+                    </div>
+                </div>
+                <div class="gold-line mt-4 opacity-30"></div>
+            </div>
 
-      <div class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 relative overflow-hidden shadow-xs hover:shadow-md transition">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Monthly Avg Volume</p>
-            <h3 id="kpiAvgSales" class="text-2xl font-black text-slate-900 mt-2">0 LTR</h3>
-          </div>
-          <div class="p-3.5 bg-brand-red text-white rounded-xl shadow-xs">
-            <i class="fa-solid fa-chart-line text-lg"></i>
-          </div>
-        </div>
-        <p class="text-xs text-slate-500 mt-3 flex items-center gap-1.5" id="avgSubtext"><i class="fa-solid fa-calendar text-slate-400"></i> Average per active month</p>
-      </div>
-    </section>
+            <!-- KPI 4 -->
+            <div class="card-premium p-6 hover-lift relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="flex justify-between items-start relative">
+                    <div>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.12em]">Monthly Avg Volume</p>
+                        <h3 id="kpiAvgSales" class="text-2xl font-black text-gray-800 mt-2 tracking-tight">0 LTR</h3>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                </div>
+                <div class="gold-line mt-4 opacity-30"></div>
+            </div>
+        </section>
 
-    <!-- Active Multi-Month Status Banner -->
-    <section id="multiMonthBanner" class="bg-brand-cardBg border border-brand-borderLight rounded-2xl p-4 text-xs flex flex-wrap justify-between items-center gap-2 shadow-xs">
-      <div class="flex items-center gap-2.5">
-        <i class="fa-solid fa-calendar-range text-brand-red text-base"></i>
-        <span class="text-slate-600 font-medium">Active Scope: <strong id="activeMonthsLabel" class="text-slate-900">None Selected</strong></span>
-      </div>
-      <span id="monthSpanBadge" class="font-mono bg-slate-50 px-3 py-1 rounded-lg border border-brand-borderLight text-slate-700 font-semibold shadow-2xs">0 Months Selected</span>
-    </section>
+        <!-- ─── MULTI-MONTH BANNER ─── -->
+        <section id="multiMonthBanner" class="card-premium px-6 py-4 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-regular fa-calendar-range text-brand-gold text-sm"></i>
+                </div>
+                <span class="text-sm text-gray-500 font-medium">
+                    Selected Months: <strong id="activeMonthsLabel" class="text-gray-800 font-bold">None Selected</strong>
+                </span>
+            </div>
+            <span id="monthSpanBadge" class="font-mono text-xs px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-bold">
+                0 Months
+            </span>
+        </section>
 
-    <!-- Advanced Multi-Chart Analytical Suite (2x2 Grid) -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
-      <!-- Chart 1: Cumulative Fuel Share Donut -->
-      <div class="lg:col-span-6 bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 flex flex-col justify-between shadow-xs">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-bold text-slate-800">Cumulative Fuel Share Breakdown</h2>
-          <span class="text-[11px] text-slate-500 font-medium"><span class="text-emerald-600 font-bold">91</span> / <span class="text-brand-red font-bold">95</span> / <span class="text-amber-600 font-bold">Diesel</span></span>
-        </div>
-        <div class="relative flex-1 min-h-[290px] flex items-center justify-center">
-          <canvas id="fuelShareChart"></canvas>
-        </div>
-      </div>
+        <!-- ─── CHARTS ─── -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-      <!-- Chart 2: Fuel Volume by Grade & Total Expenses Trend Curve -->
-      <div class="lg:col-span-6 bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 flex flex-col justify-between shadow-xs">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-sm font-bold text-slate-800">Fuel Volume & Expenses Trend Curve</h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">Grade Volumes (Bars) + Total Expenses Trend (Blue Curve Line)</p>
-          </div>
-          <span class="text-[11px] bg-slate-50 text-slate-700 font-semibold px-3 py-1 rounded-lg border border-brand-borderLight shadow-2xs">Dual-Axis Graph</span>
-        </div>
-        <div class="relative flex-1 min-h-[290px]">
-          <canvas id="monthlyGradeBarChart"></canvas>
-        </div>
-      </div>
+            <!-- Chart 1: Donut -->
+            <div class="card-premium p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800 tracking-wide">Cumulative Fuel Share</h2>
+                        <p class="text-[11px] text-gray-400 font-medium mt-0.5">Breakdown by grade</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                        <i class="fa-regular fa-chart-pie"></i>
+                    </div>
+                </div>
+                <div class="relative h-[280px] flex items-center justify-center">
+                    <canvas id="fuelShareChart"></canvas>
+                </div>
+            </div>
 
-      <!-- Chart 3: Monthly Financial & Expense Breakdown -->
-      <div class="lg:col-span-6 bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 flex flex-col justify-between shadow-xs">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-sm font-bold text-slate-800">Monthly Expense Breakdown (SAR)</h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">Salary vs Transport vs Total Expenses per month</p>
-          </div>
-          <span class="text-[11px] bg-amber-50 text-amber-800 font-semibold px-3 py-1 rounded-lg border border-amber-200 shadow-2xs">Expense Graph</span>
-        </div>
-        <div class="relative flex-1 min-h-[290px]">
-          <canvas id="monthlyExpenseBarChart"></canvas>
-        </div>
-      </div>
+            <!-- Chart 2: Grade + Expenses -->
+            <div class="card-premium p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume &amp; Expenses Trend</h2>
+                        <p class="text-[11px] text-gray-400 font-medium mt-0.5">Grade volumes vs total expenses</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                        <i class="fa-regular fa-chart-bar"></i>
+                    </div>
+                </div>
+                <div class="relative h-[280px]">
+                    <canvas id="monthlyGradeBarChart"></canvas>
+                </div>
+            </div>
 
-      <!-- Chart 4: Multi-Month Trend & Sales vs Expenses Combo Chart -->
-      <div class="lg:col-span-6 bg-brand-cardBg border border-brand-borderLight rounded-2xl p-6 flex flex-col justify-between shadow-xs">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-sm font-bold text-slate-800">Multi-Month Trend & Expenses Curve</h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">Total Volume (Red LTR Bars) & Total Expenses Trend (Blue SAR Line)</p>
-          </div>
-          <span class="text-[11px] bg-red-50 text-brand-red font-semibold px-3 py-1 rounded-lg border border-red-200 shadow-2xs">Performance Combo</span>
-        </div>
-        <div class="relative flex-1 min-h-[290px]">
-          <canvas id="monthlyTrendChart"></canvas>
-        </div>
-      </div>
+            <!-- Chart 3: Expense Breakdown -->
+            <div class="card-premium p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800 tracking-wide">Monthly Expense Breakdown</h2>
+                        <p class="text-[11px] text-gray-400 font-medium mt-0.5">Salary · Transport · Other</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                        <i class="fa-regular fa-coins"></i>
+                    </div>
+                </div>
+                <div class="relative h-[280px]">
+                    <canvas id="monthlyExpenseBarChart"></canvas>
+                </div>
+            </div>
 
-    </section>
+            <!-- Chart 4: Volume vs Expense -->
+            <div class="card-premium p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume vs Expense Trend</h2>
+                        <p class="text-[11px] text-gray-400 font-medium mt-0.5">Total volume &amp; total expenses</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs">
+                        <i class="fa-regular fa-chart-scatter"></i>
+                    </div>
+                </div>
+                <div class="relative h-[280px]">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
 
-    <!-- Data Table Section -->
-    <section class="bg-brand-cardBg border border-brand-borderLight rounded-2xl overflow-hidden shadow-xs">
-      <div class="p-6 border-b border-brand-borderLight flex flex-wrap justify-between items-center gap-4 bg-slate-50/50">
-        <div>
-          <h2 class="text-sm font-bold text-slate-900">Aggregated Station Records</h2>
-          <p class="text-xs text-slate-500 mt-0.5" id="tableRecordCount">Showing 0 entries</p>
-        </div>
-      </div>
+        </section>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs text-slate-700">
-          <thead class="bg-slate-100 uppercase text-slate-700 font-bold tracking-wider text-[11px] border-b border-brand-borderLight">
-            <tr>
-              <th class="px-4 py-3.5 border-r border-brand-borderLight">Sl No.</th>
-              <th class="px-4 py-3.5 border-r border-brand-borderLight">Stations Name</th>
-              <th class="px-4 py-3.5 border-r border-brand-borderLight">Month</th>
-              <th class="px-4 py-3.5 text-right text-emerald-700 font-bold">91 Sales LTR</th>
-              <th class="px-4 py-3.5 text-right text-brand-red font-bold">95 Sales LTR</th>
-              <th class="px-4 py-3.5 text-right text-amber-700 font-bold border-r border-brand-borderLight">Diesel Sales LTR</th>
-              <th class="px-4 py-3.5 text-right font-bold text-slate-900 border-r border-brand-borderLight">Total Sales Ltr</th>
-              <th class="px-4 py-3.5 text-right">Salary SR</th>
-              <th class="px-4 py-3.5 text-right">Fuel Transport</th>
-              <th class="px-4 py-3.5 text-right border-r border-brand-borderLight">Expenses SR</th>
-              <th class="px-4 py-3.5 text-right font-bold text-amber-700">Total Expenses</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-brand-borderLight">
-            <!-- Dynamic Rows -->
-          </tbody>
-          <tfoot id="tableFoot" class="bg-slate-100 font-bold border-t-2 border-brand-borderLight text-slate-900">
-            <!-- Dynamic Footer Totals -->
-          </tfoot>
-        </table>
-      </div>
-    </section>
+        <!-- ─── TABLE ─── -->
+        <section class="card-premium overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex flex-wrap justify-between items-center gap-3 bg-gray-50">
+                <div>
+                    <h2 class="text-sm font-bold text-gray-800 tracking-wide">Aggregated Station Records</h2>
+                    <p class="text-[11px] text-gray-400 font-medium mt-0.5" id="tableRecordCount">Showing 0 entries</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <i class="fa-regular fa-table"></i>
+                    <span>Live data</span>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Station</th>
+                            <th>Month</th>
+                            <th class="text-right">91 Sales</th>
+                            <th class="text-right">95 Sales</th>
+                            <th class="text-right">Diesel</th>
+                            <th class="text-right font-bold text-brand-gold">Total Sales</th>
+                            <th class="text-right">Salary</th>
+                            <th class="text-right">Transport</th>
+                            <th class="text-right">Expenses</th>
+                            <th class="text-right font-bold text-brand-crimson">Total Expenses</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- dynamic -->
+                    </tbody>
+                    <tfoot id="tableFoot" class="border-t border-gray-200 bg-gray-50 font-bold">
+                        <!-- dynamic -->
+                    </tfoot>
+                </table>
+            </div>
+        </section>
 
-  </main>
+    </main>
 
-  <script>
-    const MONTHS_ORDER = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  PRESERVED LOGIC – all functionality intact
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    let rawDataset = [];
-    let selectedMonths = []; 
-    let fuelShareChart = null;
-    let monthlyGradeBarChart = null;
-    let monthlyExpenseBarChart = null;
-    let monthlyTrendChart = null;
+        const MONTHS_ORDER = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
 
-    const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'SAR', maximumFractionDigits: 2 }).format(amount || 0);
-    };
+        let rawDataset = [];
+        let selectedMonths = [];
+        let fuelShareChart = null;
+        let monthlyGradeBarChart = null;
+        let monthlyExpenseBarChart = null;
+        let monthlyTrendChart = null;
 
-    const formatLiters = (amount) => {
-      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(amount || 0) + ' LTR';
-    };
+        const COLOR_91 = '#22c55e';
+        const COLOR_95 = '#ef4444';
+        const COLOR_DIESEL = '#f59e0b';
+        const COLOR_EXPENSES = '#dc2626';
+        const COLOR_SALARY = '#818cf8';
+        const COLOR_TRANSPORT = '#22d3ee';
+        const COLOR_OTHER_EXP = '#f472b6';
+        const COLOR_VOLUME = '#34d399';
 
-    const parseNumber = (value) => {
-      if (!value) return 0;
-      const cleanStr = String(value).replace(/,/g, '').replace(/SAR/g, '').replace(/LTR/g, '').trim();
-      const num = parseFloat(cleanStr);
-      return isNaN(num) ? 0 : num;
-    };
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'SAR', maximumFractionDigits: 2 })
+                .format(amount || 0);
+        };
+        const formatLiters = (amount) => {
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(amount || 0) + ' LTR';
+        };
+        const parseNumber = (value) => {
+            if (!value) return 0;
+            const cleanStr = String(value).replace(/,/g, '').replace(/SAR/g, '').replace(/LTR/g, '').trim();
+            const num = parseFloat(cleanStr);
+            return isNaN(num) ? 0 : num;
+        };
 
-    function showErrorBanner(msg) {
-      const banner = document.getElementById('errorBanner');
-      const msgText = document.getElementById('errorMessageText');
-      msgText.innerHTML = msg;
-      banner.classList.remove('hidden');
-    }
-
-    function hideErrorBanner() {
-      const banner = document.getElementById('errorBanner');
-      banner.classList.add('hidden');
-    }
-
-    function renderMonthTags() {
-      const container = document.getElementById('monthTagsContainer');
-      container.innerHTML = '';
-
-      MONTHS_ORDER.forEach((m) => {
-        const isChecked = selectedMonths.includes(m);
-        const tag = document.createElement('label');
-        tag.className = `cursor-pointer text-xs px-3.5 py-2 rounded-xl border transition flex items-center gap-1.5 font-medium shadow-2xs ${
-          isChecked 
-            ? 'bg-brand-red text-white border-brand-red shadow-xs' 
-            : 'bg-slate-50 text-slate-700 border-brand-borderLight hover:border-slate-400'
-        }`;
-        tag.innerHTML = `
-          <input type="checkbox" value="${m}" ${isChecked ? 'checked' : ''} onchange="toggleMonth('${m}')" class="hidden">
-          <span>${m.substring(0, 3)}</span>
-        `;
-        container.appendChild(tag);
-      });
-
-      document.getElementById('activeCount').textContent = selectedMonths.length;
-    }
-
-    function toggleMonth(month) {
-      if (selectedMonths.includes(month)) {
-        selectedMonths = selectedMonths.filter(m => m !== month);
-      } else {
-        selectedMonths.push(month);
-      }
-      renderMonthTags();
-      updateDashboard();
-    }
-
-    function toggleAllMonths(selectAll) {
-      if (selectAll) {
-        selectedMonths = [...MONTHS_ORDER];
-      } else {
-        selectedMonths = [];
-      }
-      renderMonthTags();
-      updateDashboard();
-    }
-
-    async function fetchGoogleSheetData() {
-      hideErrorBanner();
-      const statusDot = document.getElementById('statusDot');
-      const statusText = document.getElementById('statusText');
-
-      const sheetId = document.getElementById('sheetIdInput').value.trim();
-      const tabName = document.getElementById('tabNameInput').value.trim() || 'Master';
-
-      if (!sheetId) {
-        showErrorBanner("Please enter a valid Google Sheet ID.");
-        return;
-      }
-
-      statusDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
-      statusText.textContent = `Fetching tab '${tabName}'...`;
-
-      const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
-      const exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${encodeURIComponent(tabName)}`;
-
-      let csvText = "";
-
-      try {
-        let response = await fetch(gvizUrl);
-        if (!response.ok) {
-          response = await fetch(exportUrl);
+        function showErrorBanner(msg) {
+            const banner = document.getElementById('errorBanner');
+            document.getElementById('errorMessageText').innerHTML = msg;
+            banner.classList.remove('hidden');
         }
 
-        if (!response.ok) {
-          throw new Error(`HTTP Error ${response.status}: Unable to fetch tab '${tabName}'.`);
+        function hideErrorBanner() {
+            document.getElementById('errorBanner').classList.add('hidden');
         }
 
-        csvText = await response.text();
-
-        if (csvText.trim().toLowerCase().startsWith("<!doctype html") || csvText.includes("google-site-verification")) {
-          throw new Error("Sheet access is set to Private. Set Google Sheet sharing to <strong>'Anyone with the link'</strong>.");
+        function renderMonthTags() {
+            const container = document.getElementById('monthTagsContainer');
+            container.innerHTML = '';
+            MONTHS_ORDER.forEach((m) => {
+                const checked = selectedMonths.includes(m);
+                const tag = document.createElement('label');
+                tag.className = `month-tag ${checked ? 'active' : ''}`;
+                tag.innerHTML = `
+                    <input type="checkbox" value="${m}" ${checked ? 'checked' : ''} onchange="toggleMonth('${m}')" class="hidden">
+                    <span>${m.substring(0, 3)}</span>
+                `;
+                container.appendChild(tag);
+            });
+            document.getElementById('activeCount').textContent = selectedMonths.length;
         }
 
-        const parsedRows = parseCSV(csvText);
-
-        if (parsedRows.length <= 1) {
-          throw new Error(`No data rows found in tab <strong>"${tabName}"</strong>.`);
-        }
-
-        rawDataset = [];
-        for (let i = 1; i < parsedRows.length; i++) {
-          const row = parsedRows[i];
-          if (!row || row.length < 3) continue;
-
-          const stationName = row[1] ? row[1].trim() : '';
-          if (!stationName || stationName.toLowerCase() === 'stations name' || stationName.toLowerCase() === 'station name') continue;
-
-          const month = row[2] ? row[2].trim() : '';
-          const s91 = parseNumber(row[3]);
-          const s95 = parseNumber(row[4]);
-          const diesel = parseNumber(row[5]);
-          const totalSales = parseNumber(row[6]) || (s91 + s95 + diesel);
-          const salary = parseNumber(row[7]);
-          const fuelTransport = parseNumber(row[8]);
-          const expenses = parseNumber(row[9]);
-          const totalExpenses = parseNumber(row[10]) || (salary + fuelTransport + expenses);
-
-          rawDataset.push({
-            id: i,
-            station: stationName,
-            month: month,
-            s91: s91,
-            s95: s95,
-            diesel: diesel,
-            totalSales: totalSales,
-            salary: salary,
-            fuelTransport: fuelTransport,
-            expenses: expenses,
-            totalExpenses: totalExpenses
-          });
-        }
-
-        if (rawDataset.length === 0) {
-          throw new Error(`Tab <strong>"${tabName}"</strong> loaded, but no valid sales data rows were found.`);
-        }
-
-        statusDot.className = "w-2 h-2 rounded-full bg-brand-green";
-        statusText.textContent = `Connected (${rawDataset.length} records)`;
-
-        populateDatalist();
-        updateDashboard();
-
-      } catch (err) {
-        console.error(err);
-        statusDot.className = "w-2 h-2 rounded-full bg-brand-red";
-        statusText.textContent = "Sync Error";
-        showErrorBanner(`${err.message}<br><span class="text-[11px] opacity-80">Check Google Sheet Sharing: Click <strong>Share</strong> &rarr; General Access &rarr; set to <strong>"Anyone with the link"</strong>.</span>`);
-      }
-    }
-
-    function parseCSV(text) {
-      const lines = [];
-      let row = [];
-      let inQuotes = false;
-      let currentVal = '';
-
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-        if (char === '"') {
-          if (inQuotes && nextChar === '"') {
-            currentVal += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (char === ',' && !inQuotes) {
-          row.push(currentVal);
-          currentVal = '';
-        } else if ((char === '\r' || char === '\n') && !inQuotes) {
-          if (char === '\r' && nextChar === '\n') i++;
-          row.push(currentVal);
-          lines.push(row);
-          row = [];
-          currentVal = '';
-        } else {
-          currentVal += char;
-        }
-      }
-
-      if (currentVal || row.length > 0) {
-        row.push(currentVal);
-        lines.push(row);
-      }
-
-      return lines;
-    }
-
-    function populateDatalist() {
-      const datalist = document.getElementById('stationsList');
-      datalist.innerHTML = '';
-      const uniqueStations = [...new Set(rawDataset.map(item => item.station))];
-      uniqueStations.forEach(st => {
-        const option = document.createElement('option');
-        option.value = st;
-        datalist.appendChild(option);
-      });
-    }
-
-    function initCharts() {
-      // 1. Donut Chart
-      const ctx1 = document.getElementById('fuelShareChart').getContext('2d');
-      fuelShareChart = new Chart(ctx1, {
-        type: 'doughnut',
-        data: {
-          labels: ['91 Gasoline', '95 Gasoline', 'Diesel Fuel'],
-          datasets: [{
-            data: [0, 0, 0],
-            backgroundColor: ['#16a34a', '#dc2626', '#ca8a04'],
-            borderColor: '#ffffff',
-            borderWidth: 2,
-            hoverOffset: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
-            tooltip: {
-              callbacks: {
-                label: (context) => `${context.label}: ${formatLiters(context.raw)}`
-              }
+        function toggleMonth(month) {
+            if (selectedMonths.includes(month)) {
+                selectedMonths = selectedMonths.filter(m => m !== month);
+            } else {
+                selectedMonths.push(month);
             }
-          },
-          cutout: '65%'
+            renderMonthTags();
+            updateDashboard();
         }
-      });
 
-      // 2. Monthly Grade Bar Chart & Total Expenses Trend Curve
-      const ctx2 = document.getElementById('monthlyGradeBarChart').getContext('2d');
-      monthlyGradeBarChart = new Chart(ctx2, {
-        type: 'bar',
-        data: { labels: [], datasets: [] },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { ticks: { color: '#334155', font: { weight: '600' } }, grid: { display: false } },
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              title: { display: true, text: 'Volume (LTR)', color: '#334155', font: { size: 10, weight: '700' } },
-              ticks: { color: '#334155' },
-              grid: { color: '#e2e8f0' }
-            },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              title: { display: true, text: 'Expenses (SAR)', color: '#2563eb', font: { size: 10, weight: '700' } },
-              ticks: { color: '#2563eb' },
-              grid: { drawOnChartArea: false }
-            }
-          },
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
-            tooltip: {
-              callbacks: {
-                label: (c) => {
-                  if (c.dataset.type === 'line') return `${c.dataset.label}: ${formatCurrency(c.raw)}`;
-                  return `${c.dataset.label}: ${formatLiters(c.raw)}`;
+        function toggleAllMonths(selectAll) {
+            selectedMonths = selectAll ? [...MONTHS_ORDER] : [];
+            renderMonthTags();
+            updateDashboard();
+        }
+
+        async function fetchGoogleSheetData() {
+            hideErrorBanner();
+            const dot = document.getElementById('statusDot');
+            const txt = document.getElementById('statusText');
+
+            const sheetId = document.getElementById('sheetIdInput').value.trim();
+            const tabName = document.getElementById('tabNameInput').value.trim() || 'Master';
+
+            if (!sheetId) { showErrorBanner('Please enter a valid Google Sheet ID.'); return; }
+
+            dot.className = 'status-dot connecting';
+            txt.textContent = `Fetching ‘${tabName}’…`;
+
+            const gvizUrl =
+                `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+            const exportUrl =
+                `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${encodeURIComponent(tabName)}`;
+
+            let csvText = '';
+
+            try {
+                let response = await fetch(gvizUrl);
+                if (!response.ok) response = await fetch(exportUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}: Unable to fetch tab ‘${tabName}’.`);
+
+                csvText = await response.text();
+
+                if (csvText.trim().toLowerCase().startsWith('<!doctype html') || csvText.includes('google-site-verification')) {
+                    throw new Error(
+                        "Sheet access is set to Private. Set Google Sheet sharing to <strong>‘Anyone with the link’</strong>."
+                    );
                 }
-              }
-            }
-          }
-        }
-      });
 
-      // 3. Monthly Expense Bar Chart
-      const ctx3 = document.getElementById('monthlyExpenseBarChart').getContext('2d');
-      monthlyExpenseBarChart = new Chart(ctx3, {
-        type: 'bar',
-        data: { labels: [], datasets: [] },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { ticks: { color: '#334155', font: { weight: '600' } }, grid: { display: false } },
-            y: { ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } }
-          },
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
-            tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${formatCurrency(c.raw)}` } }
-          }
-        }
-      });
+                const parsedRows = parseCSV(csvText);
+                if (parsedRows.length <= 1) throw new Error(`No data rows found in tab <strong>"${tabName}"</strong>.`);
 
-      // 4. Multi-Month Trend & Sales vs Expenses Combo Chart
-      const ctx4 = document.getElementById('monthlyTrendChart').getContext('2d');
-      monthlyTrendChart = new Chart(ctx4, {
-        type: 'bar',
-        data: { labels: [], datasets: [] },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { ticks: { color: '#334155', font: { weight: '600' } }, grid: { display: false } },
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              title: { display: true, text: 'Volume (LTR)', color: '#334155', font: { size: 10, weight: '700' } },
-              ticks: { color: '#334155' },
-              grid: { color: '#e2e8f0' }
-            },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              title: { display: true, text: 'Expenses (SAR)', color: '#2563eb', font: { size: 10, weight: '700' } },
-              ticks: { color: '#2563eb' },
-              grid: { drawOnChartArea: false }
-            }
-          },
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
-            tooltip: {
-              callbacks: {
-                label: (context) => {
-                  if (context.dataset.type === 'line') return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
-                  return `${context.dataset.label}: ${formatLiters(context.raw)}`;
+                rawDataset = [];
+                for (let i = 1; i < parsedRows.length; i++) {
+                    const row = parsedRows[i];
+                    if (!row || row.length < 3) continue;
+                    const stationName = row[1] ? row[1].trim() : '';
+                    if (!stationName || stationName.toLowerCase() === 'stations name' || stationName.toLowerCase() ===
+                        'station name') continue;
+
+                    const month = row[2] ? row[2].trim() : '';
+                    const s91 = parseNumber(row[3]);
+                    const s95 = parseNumber(row[4]);
+                    const diesel = parseNumber(row[5]);
+                    const totalSales = parseNumber(row[6]) || (s91 + s95 + diesel);
+                    const salary = parseNumber(row[7]);
+                    const fuelTransport = parseNumber(row[8]);
+                    const expenses = parseNumber(row[9]);
+                    const totalExpenses = parseNumber(row[10]) || (salary + fuelTransport + expenses);
+
+                    rawDataset.push({
+                        id: i,
+                        station: stationName,
+                        month: month,
+                        s91: s91,
+                        s95: s95,
+                        diesel: diesel,
+                        totalSales: totalSales,
+                        salary: salary,
+                        fuelTransport: fuelTransport,
+                        expenses: expenses,
+                        totalExpenses: totalExpenses
+                    });
                 }
-              }
+
+                if (rawDataset.length === 0) {
+                    throw new Error(`Tab <strong>"${tabName}"</strong> loaded, but no valid sales data rows were found.`);
+                }
+
+                dot.className = 'status-dot';
+                txt.textContent = `Connected (${rawDataset.length} records)`;
+
+                populateDatalist();
+                updateDashboard();
+
+            } catch (err) {
+                console.error(err);
+                dot.className = 'status-dot error';
+                txt.textContent = 'Sync Error';
+                showErrorBanner(
+                    `${err.message}<br><span class="text-[11px] opacity-70 mt-1 block">Check Sharing: Click <strong>Share</strong> → General Access → set to <strong>"Anyone with the link"</strong>.</span>`
+                );
             }
-          }
         }
-      });
-    }
 
-    function updateDashboard() {
-      const stationQuery = document.getElementById('stationInput').value.trim().toLowerCase();
-
-      let filteredData = rawDataset.filter(item => {
-        const matchesStation = stationQuery === "" || item.station.toLowerCase().includes(stationQuery);
-        const matchesMonth = selectedMonths.length > 0 && selectedMonths.some(m => m.toLowerCase() === item.month.toLowerCase());
-        return matchesStation && matchesMonth;
-      });
-
-      renderTable(filteredData);
-      renderKPIs(filteredData);
-      renderCharts(filteredData);
-      updateMultiMonthBanner();
-    }
-
-    function updateMultiMonthBanner() {
-      const label = document.getElementById('activeMonthsLabel');
-      const badge = document.getElementById('monthSpanBadge');
-
-      if (selectedMonths.length === 12) {
-        label.textContent = "All 12 Months Selected (Full Year)";
-        badge.textContent = "12 Months Scope";
-      } else if (selectedMonths.length === 0) {
-        label.textContent = "None Selected (Select months above)";
-        badge.textContent = "0 Months";
-      } else {
-        label.textContent = selectedMonths.join(', ');
-        badge.textContent = `${selectedMonths.length} Months Selected`;
-      }
-    }
-
-    function renderTable(data) {
-      const tbody = document.getElementById('tableBody');
-      const tfoot = document.getElementById('tableFoot');
-      const countEl = document.getElementById('tableRecordCount');
-
-      tbody.innerHTML = '';
-      countEl.textContent = `Showing ${data.length} records`;
-
-      if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-10 text-slate-400 font-medium">No months selected or matching records found. Please select active months above.</td></tr>`;
-        tfoot.innerHTML = '';
-        return;
-      }
-
-      let totals = { s91: 0, s95: 0, diesel: 0, sales: 0, salary: 0, transport: 0, exp: 0, totalExp: 0 };
-
-      data.forEach((row, idx) => {
-        totals.s91 += row.s91 || 0;
-        totals.s95 += row.s95 || 0;
-        totals.diesel += row.diesel || 0;
-        totals.sales += row.totalSales || 0;
-        totals.salary += row.salary || 0;
-        totals.transport += row.fuelTransport || 0;
-        totals.exp += row.expenses || 0;
-        totals.totalExp += row.totalExpenses || 0;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50/80 transition-colors";
-        tr.innerHTML = `
-          <td class="px-4 py-3.5 font-medium text-slate-500 border-r border-brand-borderLight">${idx + 1}</td>
-          <td class="px-4 py-3.5 font-bold text-slate-900 border-r border-brand-borderLight">${row.station}</td>
-          <td class="px-4 py-3.5 text-slate-700 border-r border-brand-borderLight"><span class="px-2.5 py-1 rounded-md bg-slate-100 border border-brand-borderLight text-[11px] font-semibold">${row.month}</span></td>
-          <td class="px-4 py-3.5 text-right text-emerald-700 font-semibold">${formatLiters(row.s91)}</td>
-          <td class="px-4 py-3.5 text-right text-brand-red font-semibold">${formatLiters(row.s95)}</td>
-          <td class="px-4 py-3.5 text-right text-amber-700 font-semibold border-r border-brand-borderLight">${formatLiters(row.diesel)}</td>
-          <td class="px-4 py-3.5 text-right font-bold text-slate-900 border-r border-brand-borderLight">${formatLiters(row.totalSales)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-700">${formatCurrency(row.salary)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-700">${formatCurrency(row.fuelTransport)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-700 border-r border-brand-borderLight">${formatCurrency(row.expenses)}</td>
-          <td class="px-4 py-3.5 text-right font-bold text-amber-700">${formatCurrency(row.totalExpenses)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      tfoot.innerHTML = `
-        <tr>
-          <td colspan="3" class="px-4 py-3.5 text-slate-900 border-r border-brand-borderLight">Total (${data.length} records)</td>
-          <td class="px-4 py-3.5 text-right text-emerald-700">${formatLiters(totals.s91)}</td>
-          <td class="px-4 py-3.5 text-right text-brand-red">${formatLiters(totals.s95)}</td>
-          <td class="px-4 py-3.5 text-right text-amber-700 border-r border-brand-borderLight">${formatLiters(totals.diesel)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-900 font-black text-sm border-r border-brand-borderLight">${formatLiters(totals.sales)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-900">${formatCurrency(totals.salary)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-900">${formatCurrency(totals.transport)}</td>
-          <td class="px-4 py-3.5 text-right text-slate-900 border-r border-brand-borderLight">${formatCurrency(totals.exp)}</td>
-          <td class="px-4 py-3.5 text-right text-amber-700 font-black text-sm">${formatCurrency(totals.totalExp)}</td>
-        </tr>
-      `;
-    }
-
-    function renderKPIs(data) {
-      const salesVolume = data.reduce((acc, row) => acc + (row.totalSales || 0), 0);
-      const expenses = data.reduce((acc, row) => acc + (row.totalExpenses || 0), 0);
-      const totalSalary = data.reduce((acc, row) => acc + (row.salary || 0), 0);
-
-      const avgMonthlyVolume = salesVolume / (selectedMonths.length > 0 ? selectedMonths.length : 1);
-
-      document.getElementById('kpiTotalSales').textContent = formatLiters(salesVolume);
-      document.getElementById('kpiTotalExpenses').textContent = formatCurrency(expenses);
-      document.getElementById('kpiTotalSalary').textContent = formatCurrency(totalSalary);
-      document.getElementById('kpiAvgSales').textContent = formatLiters(avgMonthlyVolume);
-
-      document.getElementById('avgSubtext').innerHTML = `<i class="fa-solid fa-calendar text-slate-400"></i> Averaged over ${selectedMonths.length} selected month(s)`;
-    }
-
-    function renderCharts(data) {
-      const sum91 = data.reduce((acc, row) => acc + (row.s91 || 0), 0);
-      const sum95 = data.reduce((acc, row) => acc + (row.s95 || 0), 0);
-      const sumDiesel = data.reduce((acc, row) => acc + (row.diesel || 0), 0);
-
-      // 1. Donut Update
-      fuelShareChart.data.datasets[0].data = [sum91, sum95, sumDiesel];
-      fuelShareChart.update();
-
-      const activeSortedMonths = MONTHS_ORDER.filter(m => selectedMonths.includes(m));
-      const shortMonthsLabels = activeSortedMonths.map(m => m.substring(0, 3));
-
-      const m91List = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.s91, 0));
-      const m95List = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.s95, 0));
-      const mDieselList = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.diesel, 0));
-      const mVolumeList = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.totalSales, 0));
-      
-      const mSalaryList = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.salary, 0));
-      const mTransportList = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.fuelTransport, 0));
-      const mTotalExpList = activeSortedMonths.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((acc, curr) => acc + curr.totalExpenses, 0));
-
-      // 2. Monthly Grade Bar Chart + Total Expenses Curve Trend Update
-      monthlyGradeBarChart.data.labels = shortMonthsLabels;
-      monthlyGradeBarChart.data.datasets = [
-        { label: '91 Sales LTR', data: m91List, backgroundColor: '#16a34a', borderRadius: 4, order: 2, yAxisID: 'y' },
-        { label: '95 Sales LTR', data: m95List, backgroundColor: '#dc2626', borderRadius: 4, order: 2, yAxisID: 'y' },
-        { label: 'Diesel Sales LTR', data: mDieselList, backgroundColor: '#ca8a04', borderRadius: 4, order: 2, yAxisID: 'y' },
-        {
-          type: 'line',
-          label: 'Total Expenses',
-          data: mTotalExpList,
-          borderColor: '#2563eb',
-          backgroundColor: '#2563eb',
-          borderWidth: 3,
-          pointRadius: 4,
-          tension: 0.2,
-          order: 1,
-          yAxisID: 'y1'
+        function parseCSV(text) {
+            const lines = [];
+            let row = [],
+                inQuotes = false,
+                cur = '';
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i],
+                    n = text[i + 1];
+                if (c === '"') {
+                    if (inQuotes && n === '"') { cur += '"';
+                        i++; } else inQuotes = !inQuotes;
+                } else if (c === ',' && !inQuotes) {
+                    row.push(cur);
+                    cur = '';
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && n === '\n') i++;
+                    row.push(cur);
+                    lines.push(row);
+                    row = [];
+                    cur = '';
+                } else {
+                    cur += c;
+                }
+            }
+            if (cur || row.length > 0) { row.push(cur);
+                lines.push(row); }
+            return lines;
         }
-      ];
-      monthlyGradeBarChart.update();
 
-      // 3. Monthly Expense Bar Chart Update
-      monthlyExpenseBarChart.data.labels = shortMonthsLabels;
-      monthlyExpenseBarChart.data.datasets = [
-        { label: 'Salary SR', data: mSalaryList, backgroundColor: '#2563eb', borderRadius: 4 },
-        { label: 'Fuel Transport', data: mTransportList, backgroundColor: '#9333ea', borderRadius: 4 },
-        { label: 'Expenses SR', data: mTotalExpList, backgroundColor: '#ca8a04', borderRadius: 4 }
-      ];
-      monthlyExpenseBarChart.update();
-
-      // 4. Multi-Month Trend Combo Chart Update
-      monthlyTrendChart.data.labels = shortMonthsLabels;
-      monthlyTrendChart.data.datasets = [
-        {
-          type: 'bar',
-          label: 'Total Sales Ltr',
-          data: mVolumeList,
-          backgroundColor: '#dc2626',
-          borderRadius: 4,
-          order: 2,
-          yAxisID: 'y'
-        },
-        {
-          type: 'line',
-          label: 'Total Expenses',
-          data: mTotalExpList,
-          borderColor: '#2563eb',
-          backgroundColor: '#2563eb',
-          borderWidth: 3,
-          pointRadius: 4,
-          tension: 0.2,
-          order: 1,
-          yAxisID: 'y1'
+        function populateDatalist() {
+            const dl = document.getElementById('stationsList');
+            dl.innerHTML = '';
+            const uniq = [...new Set(rawDataset.map(i => i.station))];
+            uniq.forEach(s => { const o = document.createElement('option');
+                o.value = s;
+                dl.appendChild(o); });
         }
-      ];
-      monthlyTrendChart.update();
-    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      initCharts();
-      renderMonthTags();
-      fetchGoogleSheetData();
-    });
-  </script>
+        // ─── Chart defaults ───
+        Chart.defaults.color = '#4b5563';
+        Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+
+        function initCharts() {
+            // 1. Donut
+            const ctx1 = document.getElementById('fuelShareChart').getContext('2d');
+            fuelShareChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: { labels: ['91 Gasoline', '95 Gasoline', 'Diesel Fuel'], datasets: [{ data: [0, 0, 0],
+                        backgroundColor: [COLOR_91, COLOR_95, COLOR_DIESEL], borderColor: '#ffffff',
+                        borderWidth: 2, hoverOffset: 8 }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 11, weight: '600' }, color: '#4b5563',
+                                padding: 16 } },
+                        tooltip: { callbacks: { label: (c) => ` ${c.label}: ${formatLiters(c.raw)}` } }
+                    },
+                    cutout: '72%'
+                }
+            });
+
+            // 2. Grade Bar + Expenses line
+            const ctx2 = document.getElementById('monthlyGradeBarChart').getContext('2d');
+            monthlyGradeBarChart = new Chart(ctx2, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { font: { weight: '600' }, color: '#6b7280' }, grid: { display: false } },
+                        y: { position: 'left', title: { display: true, text: 'Volume (LTR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { color: '#f1f5f9' } },
+                        y1: { position: 'right', title: { display: true, text: 'Expenses (SAR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '600' }, color: '#4b5563',
+                                padding: 14 } },
+                        tooltip: {
+                            callbacks: {
+                                label: (c) => {
+                                    if (c.dataset.type === 'line') return ` ${c.dataset.label}: ${formatCurrency(c.raw)}`;
+                                    return ` ${c.dataset.label}: ${formatLiters(c.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. Expense breakdown
+            const ctx3 = document.getElementById('monthlyExpenseBarChart').getContext('2d');
+            monthlyExpenseBarChart = new Chart(ctx3, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { font: { weight: '600' }, color: '#6b7280' }, grid: { display: false } },
+                        y: { grid: { color: '#f1f5f9' } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '600' }, color: '#4b5563',
+                                padding: 14 } },
+                        tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${formatCurrency(c.raw)}` } }
+                    }
+                }
+            });
+
+            // 4. Volume vs Expense
+            const ctx4 = document.getElementById('monthlyTrendChart').getContext('2d');
+            monthlyTrendChart = new Chart(ctx4, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { font: { weight: '600' }, color: '#6b7280' }, grid: { display: false } },
+                        y: { position: 'left', title: { display: true, text: 'Volume (LTR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { color: '#f1f5f9' } },
+                        y1: { position: 'right', title: { display: true, text: 'Expenses (SAR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '600' }, color: '#4b5563',
+                                padding: 14 } },
+                        tooltip: {
+                            callbacks: {
+                                label: (c) => {
+                                    if (c.dataset.type === 'line') return ` ${c.dataset.label}: ${formatCurrency(c.raw)}`;
+                                    return ` ${c.dataset.label}: ${formatLiters(c.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDashboard() {
+            const query = document.getElementById('stationInput').value.trim().toLowerCase();
+
+            let filtered = rawDataset.filter(item => {
+                const matchStation = query === '' || item.station.toLowerCase().includes(query);
+                const matchMonth = selectedMonths.length > 0 && selectedMonths.some(m => m.toLowerCase() === item.month
+                    .toLowerCase());
+                return matchStation && matchMonth;
+            });
+
+            renderTable(filtered);
+            renderKPIs(filtered);
+            renderCharts(filtered);
+            updateMultiMonthBanner();
+        }
+
+        function updateMultiMonthBanner() {
+            const label = document.getElementById('activeMonthsLabel');
+            const badge = document.getElementById('monthSpanBadge');
+            if (selectedMonths.length === 12) {
+                label.textContent = 'All 12 Months Selected (Full Year)';
+                badge.textContent = '12 Months';
+            } else if (selectedMonths.length === 0) {
+                label.textContent = 'None Selected (Select months to view data)';
+                badge.textContent = '0 Months';
+            } else {
+                label.textContent = selectedMonths.join(', ');
+                badge.textContent = `${selectedMonths.length} Months`;
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            const tfoot = document.getElementById('tableFoot');
+            const count = document.getElementById('tableRecordCount');
+
+            tbody.innerHTML = '';
+            count.textContent = `Showing ${data.length} entries`;
+
+            if (data.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="11" class="text-center py-12 text-gray-400 font-medium text-sm">No matching records found.</td></tr>`;
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            let totals = { s91: 0, s95: 0, diesel: 0, sales: 0, salary: 0, transport: 0, exp: 0, totalExp: 0 };
+
+            data.forEach((row, idx) => {
+                totals.s91 += row.s91 || 0;
+                totals.s95 += row.s95 || 0;
+                totals.diesel += row.diesel || 0;
+                totals.sales += row.totalSales || 0;
+                totals.salary += row.salary || 0;
+                totals.transport += row.fuelTransport || 0;
+                totals.exp += row.expenses || 0;
+                totals.totalExp += row.totalExpenses || 0;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td class="text-gray-400">${idx + 1}</td>
+                        <td class="font-semibold text-gray-800">${row.station}</td>
+                        <td><span class="text-xs px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-medium">${row.month}</span></td>
+                        <td class="text-right text-emerald-600 font-semibold">${formatLiters(row.s91)}</td>
+                        <td class="text-right text-red-600 font-semibold">${formatLiters(row.s95)}</td>
+                        <td class="text-right text-amber-600 font-semibold">${formatLiters(row.diesel)}</td>
+                        <td class="text-right font-bold text-brand-gold">${formatLiters(row.totalSales)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(row.salary)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(row.fuelTransport)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(row.expenses)}</td>
+                        <td class="text-right font-bold text-brand-crimson">${formatCurrency(row.totalExpenses)}</td>
+                    `;
+                tbody.appendChild(tr);
+            });
+
+            tfoot.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-right font-bold uppercase tracking-wider text-gray-400 text-[11px]">Grand Total</td>
+                        <td class="text-right text-emerald-600">${formatLiters(totals.s91)}</td>
+                        <td class="text-right text-red-600">${formatLiters(totals.s95)}</td>
+                        <td class="text-right text-amber-600">${formatLiters(totals.diesel)}</td>
+                        <td class="text-right font-bold text-brand-gold">${formatLiters(totals.sales)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(totals.salary)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(totals.transport)}</td>
+                        <td class="text-right text-gray-600">${formatCurrency(totals.exp)}</td>
+                        <td class="text-right font-bold text-brand-crimson">${formatCurrency(totals.totalExp)}</td>
+                    </tr>
+                `;
+        }
+
+        function renderKPIs(data) {
+            const vol = data.reduce((a, r) => a + (r.totalSales || 0), 0);
+            const exp = data.reduce((a, r) => a + (r.totalExpenses || 0), 0);
+            const sal = data.reduce((a, r) => a + (r.salary || 0), 0);
+            const avg = vol / (selectedMonths.length > 0 ? selectedMonths.length : 1);
+
+            document.getElementById('kpiTotalSales').textContent = formatLiters(vol);
+            document.getElementById('kpiTotalExpenses').textContent = formatCurrency(exp);
+            document.getElementById('kpiTotalSalary').textContent = formatCurrency(sal);
+            document.getElementById('kpiAvgSales').textContent = formatLiters(avg);
+        }
+
+        function renderCharts(data) {
+            const s91 = data.reduce((a, r) => a + (r.s91 || 0), 0);
+            const s95 = data.reduce((a, r) => a + (r.s95 || 0), 0);
+            const sd = data.reduce((a, r) => a + (r.diesel || 0), 0);
+
+            fuelShareChart.data.datasets[0].data = [s91, s95, sd];
+            fuelShareChart.update();
+
+            const active = MONTHS_ORDER.filter(m => selectedMonths.includes(m));
+            const labels = active.map(m => m.substring(0, 3));
+
+            const m91 = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .s91, 0));
+            const m95 = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .s95, 0));
+            const md = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .diesel, 0));
+            const mv = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .totalSales, 0));
+            const ms = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .salary, 0));
+            const mt = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .fuelTransport, 0));
+            const me = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .expenses, 0));
+            const mte = active.map(m => data.filter(d => d.month.toLowerCase() === m.toLowerCase()).reduce((a, c) => a + c
+                .totalExpenses, 0));
+
+            // Chart 2
+            monthlyGradeBarChart.data.labels = labels;
+            monthlyGradeBarChart.data.datasets = [
+                { label: '91', data: m91, backgroundColor: COLOR_91, order: 2, yAxisID: 'y' },
+                { label: '95', data: m95, backgroundColor: COLOR_95, order: 2, yAxisID: 'y' },
+                { label: 'Diesel', data: md, backgroundColor: COLOR_DIESEL, order: 2, yAxisID: 'y' },
+                { type: 'line', label: 'Total Expenses', data: mte, borderColor: COLOR_EXPENSES,
+                    backgroundColor: COLOR_EXPENSES, borderWidth: 2.5, pointRadius: 4, tension: 0.2, order: 1,
+                    yAxisID: 'y1' }
+            ];
+            monthlyGradeBarChart.update();
+
+            // Chart 3
+            monthlyExpenseBarChart.data.labels = labels;
+            monthlyExpenseBarChart.data.datasets = [
+                { label: 'Salary', data: ms, backgroundColor: COLOR_SALARY },
+                { label: 'Transport', data: mt, backgroundColor: COLOR_TRANSPORT },
+                { label: 'Other Expenses', data: me, backgroundColor: COLOR_OTHER_EXP }
+            ];
+            monthlyExpenseBarChart.update();
+
+            // Chart 4
+            monthlyTrendChart.data.labels = labels;
+            monthlyTrendChart.data.datasets = [
+                { type: 'bar', label: 'Total Volume', data: mv, backgroundColor: COLOR_VOLUME, order: 2,
+                    yAxisID: 'y' },
+                { type: 'line', label: 'Total Expenses', data: mte, borderColor: COLOR_EXPENSES,
+                    backgroundColor: COLOR_EXPENSES, borderWidth: 2.5, pointRadius: 4, tension: 0.2, order: 1,
+                    yAxisID: 'y1' }
+            ];
+            monthlyTrendChart.update();
+        }
+
+        // ─── BOOT ───
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            renderMonthTags();
+            fetchGoogleSheetData();
+        });
+    </script>
+
 </body>
 </html>

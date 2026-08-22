@@ -69,6 +69,11 @@
             font-family: 'Inter', system-ui, sans-serif;
             color: #111827;
             min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button, .month-tag, .sync-btn {
+            touch-action: manipulation;
         }
         ::-webkit-scrollbar {
             width: 5px;
@@ -218,6 +223,30 @@
         .table-scroll {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            max-height: 560px;
+            overflow-y: auto;
+        }
+        .premium-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .premium-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+        .premium-table th.sortable:hover {
+            color: #111827;
+        }
+        .premium-table th.sortable i {
+            font-size: 9px;
+            margin-left: 4px;
+            color: #d1d5db;
+            transition: color 0.2s ease;
+        }
+        .premium-table th.sortable.sort-active i {
+            color: #d4a843;
         }
         .table-scroll::-webkit-scrollbar {
             height: 6px;
@@ -229,6 +258,15 @@
         .table-scroll::-webkit-scrollbar-thumb {
             background: #d4a843;
             border-radius: 10px;
+        }
+
+        /* ── mobile record cards (table replacement on small screens) ── */
+        .mobile-record-card {
+            padding: 16px;
+            background: #ffffff;
+        }
+        .mrc-grid {
+            grid-template-columns: 1fr 1fr;
         }
 
         /* ── KPI icon ── */
@@ -413,10 +451,10 @@
         /* ── Mobile Enhancements ── */
         @media (max-width: 640px) {
             header .h-20 {
-                height: 64px;
+                height: 60px;
             }
             .logo-img {
-                height: 32px;
+                height: 30px;
             }
             header .border-l {
                 border-left: none !important;
@@ -429,8 +467,9 @@
                 gap: 8px !important;
             }
             .sync-btn {
-                padding: 6px 14px;
+                padding: 8px 16px;
                 font-size: 12px;
+                min-height: 38px;
             }
             .sync-btn span {
                 display: none !important;
@@ -439,10 +478,13 @@
                 font-size: 14px !important;
             }
             main {
-                padding-top: 16px;
+                padding-top: 14px;
                 padding-bottom: 32px;
                 padding-left: 12px;
                 padding-right: 12px;
+            }
+            main.space-y-8 > * + * {
+                margin-top: 1.25rem !important;
             }
             .kpi-icon {
                 width: 36px;
@@ -451,61 +493,46 @@
             .kpi-icon i {
                 font-size: 14px !important;
             }
-            .card-premium p {
-                font-size: 10px !important;
-            }
             .card-premium h3 {
-                font-size: 20px !important;
+                font-size: 19px !important;
             }
             .card-premium.p-6 {
-                padding: 16px;
+                padding: 14px;
             }
+            /* iOS zooms in on inputs under 16px — keep at 16px to prevent it */
             .premium-input {
-                padding: 10px 14px;
-                font-size: 14px;
+                padding: 12px 14px;
+                font-size: 16px;
             }
             .month-tag {
-                font-size: 11px;
-                padding: 4px 12px;
-            }
-            #monthTagsContainer {
-                gap: 6px;
-            }
-            #multiMonthBanner {
-                padding: 12px 16px;
-            }
-            #multiMonthBanner .text-sm {
                 font-size: 12px;
+                padding: 8px 14px;
+                min-height: 36px;
             }
-            #multiMonthBanner .w-8 {
-                width: 28px;
-                height: 28px;
+            #monthTagsContainer,
+            #comparisonStationList {
+                gap: 8px;
             }
-            #multiMonthBanner .w-8 i {
-                font-size: 12px !important;
+            .card-premium .h-\[280px\] {
+                height: 230px;
             }
-            .card-premium.p-6 {
-                padding: 16px;
+            .card-premium .h-\[320px\] {
+                height: 260px;
             }
-            .card-premium .h-[280px] {
-                height: 220px;
+            .card-premium .h-\[340px\] {
+                height: 260px;
             }
             .card-premium h2 {
                 font-size: 13px !important;
             }
             .card-premium p {
-                font-size: 10px !important;
+                font-size: 10.5px !important;
             }
-            .premium-table tbody td {
-                font-size: 11px;
-                padding: 6px 8px;
+            .table-scroll {
+                max-height: 420px;
             }
-            .premium-table thead th {
-                font-size: 9px;
-                padding: 6px 8px;
-            }
-            .premium-table {
-                min-width: 900px;
+            section.grid {
+                gap: 14px !important;
             }
             .toast {
                 bottom: 10px;
@@ -525,6 +552,18 @@
             .error-banner .flex-shrink-0 > * {
                 width: 100%;
                 justify-content: center;
+            }
+            /* Comparison mode toggle: full width, easy to tap */
+            #comparisonToggleBtn {
+                width: 100%;
+                justify-content: center;
+            }
+            /* Mobile record cards (replace table on small screens) */
+            .mobile-record-card {
+                padding: 14px 16px;
+            }
+            .mobile-record-card .mrc-grid {
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -694,19 +733,30 @@
             </div>
         </section>
 
-        <!-- ─── MULTI-MONTH BANNER ─── -->
-        <section id="multiMonthBanner" class="card-premium px-6 py-4 flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                    <i class="fa-regular fa-calendar-range text-brand-gold text-sm"></i>
+        <!-- ─── MULTI-STATION COMPARISON ─── -->
+        <section class="card-premium p-6">
+            <div class="flex items-center justify-between mb-1 flex-wrap gap-3">
+                <div>
+                    <h2 class="text-sm font-bold text-gray-800 tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-code-compare text-brand-gold text-xs" aria-hidden="true"></i> Multi-Station Comparison
+                    </h2>
+                    <p class="text-[11px] text-gray-400 font-medium mt-0.5">Compare total volume &amp; expenses across stations (uses active months)</p>
                 </div>
-                <span class="text-sm text-gray-500 font-medium">
-                    Selected Months: <strong id="activeMonthsLabel" class="text-gray-800 font-bold">None Selected</strong>
-                </span>
+                <button id="comparisonToggleBtn" onclick="toggleComparisonMode()" class="month-tag" aria-pressed="false">
+                    <i class="fa-regular fa-square" id="comparisonToggleIcon" aria-hidden="true"></i>
+                    <span id="comparisonToggleLabel">Enable Comparison</span>
+                </button>
             </div>
-            <span id="monthSpanBadge" class="font-mono text-xs px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-bold" aria-live="polite">
-                0 Months
-            </span>
+            <div id="comparisonPanel" class="hidden mt-5 pt-5 border-t border-gray-200">
+                <div id="comparisonStationList" class="flex flex-wrap gap-2 mb-5" role="group" aria-label="Select stations to compare">
+                    <!-- rendered by JS -->
+                </div>
+                <p id="comparisonEmptyMsg" class="text-xs text-gray-400 text-center py-10 hidden">Select one or more stations above to compare.</p>
+                <div class="relative h-[320px]" id="comparisonChartWrap">
+                    <canvas id="stationComparisonChart" aria-label="Station comparison chart"></canvas>
+                </div>
+                <p class="text-[10px] text-gray-400 italic mt-2">Tip: click legend items to show/hide a series.</p>
+            </div>
         </section>
 
         <!-- ─── CHARTS ─── -->
@@ -719,7 +769,7 @@
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Cumulative Fuel Share</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Breakdown by grade</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs flex-shrink-0" aria-hidden="true">
                         <i class="fa-regular fa-chart-pie"></i>
                     </div>
                 </div>
@@ -734,8 +784,9 @@
                     <div>
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume &amp; Expenses Trend</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Grade volumes vs total expenses</p>
+                        <p class="text-[10px] text-gray-300 italic mt-0.5">Click legend to toggle series</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs flex-shrink-0" aria-hidden="true">
                         <i class="fa-regular fa-chart-bar"></i>
                     </div>
                 </div>
@@ -750,8 +801,9 @@
                     <div>
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Monthly Expense Breakdown</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Salary · Transport · Other</p>
+                        <p class="text-[10px] text-gray-300 italic mt-0.5">Click legend to toggle series</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs flex-shrink-0" aria-hidden="true">
                         <i class="fa-regular fa-coins"></i>
                     </div>
                 </div>
@@ -766,13 +818,31 @@
                     <div>
                         <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume vs Expense Trend</h2>
                         <p class="text-[11px] text-gray-400 font-medium mt-0.5">Total volume &amp; total expenses</p>
+                        <p class="text-[10px] text-gray-300 italic mt-0.5">Click legend to toggle series</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs" aria-hidden="true">
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs flex-shrink-0" aria-hidden="true">
                         <i class="fa-regular fa-chart-scatter"></i>
                     </div>
                 </div>
                 <div class="relative h-[280px]">
                     <canvas id="monthlyTrendChart" aria-label="Volume versus expense trend chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 5: Volume & Expenses Trend (duplicate) -->
+            <div class="card-premium p-6 lg:col-span-2">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800 tracking-wide">Volume &amp; Expenses Trend</h2>
+                        <p class="text-[11px] text-gray-400 font-medium mt-0.5">Grade volumes vs total expenses</p>
+                        <p class="text-[10px] text-gray-300 italic mt-0.5">Click legend to toggle series</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold text-xs flex-shrink-0" aria-hidden="true">
+                        <i class="fa-regular fa-chart-bar"></i>
+                    </div>
+                </div>
+                <div class="relative h-[340px]">
+                    <canvas id="monthlyGradeBarChart2" aria-label="Monthly grade bar chart with expenses line (duplicate)"></canvas>
                 </div>
             </div>
 
@@ -790,21 +860,21 @@
                     <span>Live data</span>
                 </div>
             </div>
-            <div class="table-scroll">
+            <div class="table-scroll hidden sm:block">
                 <table class="premium-table" aria-label="Station records table">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Station</th>
-                            <th>Month</th>
-                            <th class="text-right">91 Sales</th>
-                            <th class="text-right">95 Sales</th>
-                            <th class="text-right">Diesel</th>
-                            <th class="text-right font-bold text-brand-gold">Total Sales</th>
-                            <th class="text-right">Salary</th>
-                            <th class="text-right">Transport</th>
-                            <th class="text-right">Expenses</th>
-                            <th class="text-right font-bold text-brand-crimson">Total Expenses</th>
+                            <th class="sortable" onclick="sortTable('station')" data-sort-key="station">Station <i class="fa-solid fa-sort" id="sortIcon-station"></i></th>
+                            <th class="sortable" onclick="sortTable('month')" data-sort-key="month">Month <i class="fa-solid fa-sort" id="sortIcon-month"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('s91')" data-sort-key="s91">91 Sales <i class="fa-solid fa-sort" id="sortIcon-s91"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('s95')" data-sort-key="s95">95 Sales <i class="fa-solid fa-sort" id="sortIcon-s95"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('diesel')" data-sort-key="diesel">Diesel <i class="fa-solid fa-sort" id="sortIcon-diesel"></i></th>
+                            <th class="text-right font-bold text-brand-gold sortable" onclick="sortTable('totalSales')" data-sort-key="totalSales">Total Sales <i class="fa-solid fa-sort" id="sortIcon-totalSales"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('salary')" data-sort-key="salary">Salary <i class="fa-solid fa-sort" id="sortIcon-salary"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('fuelTransport')" data-sort-key="fuelTransport">Transport <i class="fa-solid fa-sort" id="sortIcon-fuelTransport"></i></th>
+                            <th class="text-right sortable" onclick="sortTable('expenses')" data-sort-key="expenses">Expenses <i class="fa-solid fa-sort" id="sortIcon-expenses"></i></th>
+                            <th class="text-right font-bold text-brand-crimson sortable" onclick="sortTable('totalExpenses')" data-sort-key="totalExpenses">Total Expenses <i class="fa-solid fa-sort" id="sortIcon-totalExpenses"></i></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -814,6 +884,11 @@
                         <!-- dynamic -->
                     </tfoot>
                 </table>
+            </div>
+
+            <!-- Mobile: stacked record cards instead of a horizontally-scrolling table -->
+            <div id="mobileRecordCards" class="sm:hidden divide-y divide-gray-100 max-h-[520px] overflow-y-auto">
+                <!-- dynamic -->
             </div>
         </section>
 
@@ -839,6 +914,17 @@
         let monthlyGradeBarChart = null;
         let monthlyExpenseBarChart = null;
         let monthlyTrendChart = null;
+        let monthlyGradeBarChart2 = null;
+        let stationComparisonChart = null;
+
+        // ─── Sortable table state ───
+        let sortKey = null;
+        let sortDir = 'asc'; // 'asc' | 'desc'
+        let lastFilteredData = [];
+
+        // ─── Multi-station comparison state ───
+        let comparisonMode = false;
+        let selectedComparisonStations = [];
 
         // ─── Debounce helper (Performance Tweak) ───
         function debounce(fn, delay) {
@@ -1081,6 +1167,140 @@
             uniq.forEach(s => { const o = document.createElement('option');
                 o.value = s;
                 dl.appendChild(o); });
+            populateComparisonStations();
+        }
+
+        // ─── Multi-Station Comparison Mode ───
+        function toggleComparisonMode() {
+            comparisonMode = !comparisonMode;
+            const panel = document.getElementById('comparisonPanel');
+            const icon = document.getElementById('comparisonToggleIcon');
+            const label = document.getElementById('comparisonToggleLabel');
+            const btn = document.getElementById('comparisonToggleBtn');
+
+            if (comparisonMode) {
+                panel.classList.remove('hidden');
+                icon.className = 'fa-solid fa-square-check';
+                label.textContent = 'Disable Comparison';
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+                populateComparisonStations();
+                renderComparisonChart();
+            } else {
+                panel.classList.add('hidden');
+                icon.className = 'fa-regular fa-square';
+                label.textContent = 'Enable Comparison';
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            }
+        }
+
+        function populateComparisonStations() {
+            const container = document.getElementById('comparisonStationList');
+            if (!container) return;
+            container.innerHTML = '';
+            const uniq = [...new Set(rawDataset.map(i => i.station))].sort();
+            uniq.forEach(station => {
+                const checked = selectedComparisonStations.includes(station);
+                const tag = document.createElement('label');
+                tag.className = `month-tag ${checked ? 'active' : ''}`;
+                const safe = station.replace(/'/g, "\\'");
+                tag.innerHTML = `
+                    <input type="checkbox" value="${station}" ${checked ? 'checked' : ''} onchange="toggleComparisonStation('${safe}')" class="hidden">
+                    <span>${station}</span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        function toggleComparisonStation(station) {
+            if (selectedComparisonStations.includes(station)) {
+                selectedComparisonStations = selectedComparisonStations.filter(s => s !== station);
+            } else {
+                selectedComparisonStations.push(station);
+            }
+            populateComparisonStations();
+            renderComparisonChart();
+        }
+
+        function renderComparisonChart() {
+            if (!stationComparisonChart) return;
+            const emptyMsg = document.getElementById('comparisonEmptyMsg');
+            const wrap = document.getElementById('comparisonChartWrap');
+
+            if (selectedComparisonStations.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                wrap.classList.add('hidden');
+                stationComparisonChart.data.labels = [];
+                stationComparisonChart.data.datasets = [];
+                stationComparisonChart.update();
+                return;
+            }
+            emptyMsg.classList.add('hidden');
+            wrap.classList.remove('hidden');
+
+            const monthsToUse = selectedMonths.length > 0 ? selectedMonths : MONTHS_ORDER;
+            const volumes = selectedComparisonStations.map(st =>
+                rawDataset.filter(r => r.station === st && monthsToUse.some(m => m.toLowerCase() === r.month
+                    .toLowerCase())).reduce((a, c) => a + (c.totalSales || 0), 0));
+            const expenses = selectedComparisonStations.map(st =>
+                rawDataset.filter(r => r.station === st && monthsToUse.some(m => m.toLowerCase() === r.month
+                    .toLowerCase())).reduce((a, c) => a + (c.totalExpenses || 0), 0));
+
+            stationComparisonChart.data.labels = selectedComparisonStations;
+            stationComparisonChart.data.datasets = [
+                { label: 'Total Volume (LTR)', data: volumes, backgroundColor: COLOR_VOLUME, yAxisID: 'y', order: 2 },
+                { label: 'Total Expenses (SAR)', data: expenses, backgroundColor: COLOR_EXPENSES_LINE, yAxisID: 'y1',
+                    order: 2 }
+            ];
+            stationComparisonChart.update();
+        }
+
+        // ─── Sortable table columns ───
+        function sortTable(key) {
+            if (sortKey === key) {
+                sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortKey = key;
+                sortDir = 'asc';
+            }
+            updateSortIcons();
+            renderTable(sortData(lastFilteredData));
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('.premium-table th.sortable').forEach(th => {
+                th.classList.remove('sort-active');
+                const icon = th.querySelector('i');
+                if (icon) icon.className = 'fa-solid fa-sort';
+            });
+            if (sortKey) {
+                const activeTh = document.querySelector(`.premium-table th[data-sort-key="${sortKey}"]`);
+                if (activeTh) {
+                    activeTh.classList.add('sort-active');
+                    const icon = activeTh.querySelector('i');
+                    if (icon) icon.className = sortDir === 'asc' ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
+                }
+            }
+        }
+
+        function sortData(data) {
+            if (!sortKey) return data;
+            const sorted = [...data];
+            sorted.sort((a, b) => {
+                let av = a[sortKey], bv = b[sortKey];
+                let cmp;
+                if (sortKey === 'month') {
+                    cmp = MONTHS_ORDER.findIndex(m => m.toLowerCase() === String(av).toLowerCase()) -
+                        MONTHS_ORDER.findIndex(m => m.toLowerCase() === String(bv).toLowerCase());
+                } else if (typeof av === 'string' || typeof bv === 'string') {
+                    cmp = String(av || '').localeCompare(String(bv || ''));
+                } else {
+                    cmp = (av || 0) - (bv || 0);
+                }
+                return sortDir === 'asc' ? cmp : -cmp;
+            });
+            return sorted;
         }
 
         // ─── Chart defaults ───
@@ -1186,6 +1406,64 @@
                     }
                 }
             });
+
+            // 5. Volume & Expenses Trend (duplicate of Chart 2)
+            const ctx5 = document.getElementById('monthlyGradeBarChart2').getContext('2d');
+            monthlyGradeBarChart2 = new Chart(ctx5, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { font: { weight: '600' }, color: '#6b7280' }, grid: { display: false } },
+                        y: { position: 'left', title: { display: true, text: 'Volume (LTR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { color: '#f1f5f9' } },
+                        y1: { position: 'right', title: { display: true, text: 'Expenses (SAR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '600' }, color: '#4b5563',
+                                padding: 14 } },
+                        tooltip: {
+                            callbacks: {
+                                label: (c) => {
+                                    if (c.dataset.type === 'line') return ` ${c.dataset.label}: ${formatCurrency(c.raw)}`;
+                                    return ` ${c.dataset.label}: ${formatLiters(c.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 6. Multi-Station Comparison
+            const ctx6 = document.getElementById('stationComparisonChart').getContext('2d');
+            stationComparisonChart = new Chart(ctx6, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { font: { weight: '600' }, color: '#6b7280' }, grid: { display: false } },
+                        y: { position: 'left', title: { display: true, text: 'Volume (LTR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { color: '#f1f5f9' } },
+                        y1: { position: 'right', title: { display: true, text: 'Expenses (SAR)', font: { size: 10,
+                                    weight: '600' }, color: '#6b7280' }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '600' }, color: '#4b5563',
+                                padding: 14 } },
+                        tooltip: {
+                            callbacks: {
+                                label: (c) => c.dataset.yAxisID === 'y1' ? ` ${c.dataset.label}: ${formatCurrency(c.raw)}` :
+                                    ` ${c.dataset.label}: ${formatLiters(c.raw)}`
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // ─── Update dashboard with performance tweaks ───
@@ -1205,32 +1483,19 @@
             });
 
             requestAnimationFrame(() => {
-                renderTable(filtered);
+                lastFilteredData = filtered;
+                renderTable(sortData(filtered));
                 renderKPIs(filtered);
                 renderCharts(filtered);
-                updateMultiMonthBanner();
+                if (comparisonMode) renderComparisonChart();
             });
-        }
-
-        function updateMultiMonthBanner() {
-            const label = document.getElementById('activeMonthsLabel');
-            const badge = document.getElementById('monthSpanBadge');
-            if (selectedMonths.length === 12) {
-                label.textContent = 'All 12 Months Selected (Full Year)';
-                badge.textContent = '12 Months';
-            } else if (selectedMonths.length === 0) {
-                label.textContent = 'None Selected (Select months to view data)';
-                badge.textContent = '0 Months';
-            } else {
-                label.textContent = selectedMonths.join(', ');
-                badge.textContent = `${selectedMonths.length} Months`;
-            }
         }
 
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFoot');
             const count = document.getElementById('tableRecordCount');
+            const mobileCards = document.getElementById('mobileRecordCards');
 
             tbody.innerHTML = '';
             count.textContent = `Showing ${data.length} entries`;
@@ -1239,10 +1504,13 @@
                 tbody.innerHTML =
                     `<tr><td colspan="11" class="text-center py-12 text-gray-400 font-medium text-sm">No matching records found.</td></tr>`;
                 tfoot.innerHTML = '';
+                mobileCards.innerHTML =
+                    `<div class="text-center py-12 text-gray-400 font-medium text-sm">No matching records found.</div>`;
                 return;
             }
 
             let totals = { s91: 0, s95: 0, diesel: 0, sales: 0, salary: 0, transport: 0, exp: 0, totalExp: 0 };
+            let mobileHtml = '';
 
             data.forEach((row, idx) => {
                 totals.s91 += row.s91 || 0;
@@ -1269,6 +1537,25 @@
                         <td class="text-right font-bold text-brand-crimson">${formatCurrency(row.totalExpenses)}</td>
                     `;
                 tbody.appendChild(tr);
+
+                mobileHtml += `
+                    <div class="mobile-record-card">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="font-semibold text-gray-800 text-sm break-words">${row.station}</span>
+                            <span class="text-[10px] px-2.5 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-600 font-semibold flex-shrink-0">${row.month}</span>
+                        </div>
+                        <div class="mrc-grid grid gap-x-3 gap-y-1.5 text-[11px]">
+                            <div class="flex justify-between"><span class="text-gray-400">91 Sales</span><span class="font-semibold text-emerald-600">${formatLiters(row.s91)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">95 Sales</span><span class="font-semibold text-red-600">${formatLiters(row.s95)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Diesel</span><span class="font-semibold text-amber-600">${formatLiters(row.diesel)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Total Sales</span><span class="font-bold text-brand-gold">${formatLiters(row.totalSales)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Salary</span><span class="text-gray-600">${formatCurrency(row.salary)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Transport</span><span class="text-gray-600">${formatCurrency(row.fuelTransport)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Expenses</span><span class="text-gray-600">${formatCurrency(row.expenses)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Total Exp</span><span class="font-bold text-brand-crimson">${formatCurrency(row.totalExpenses)}</span></div>
+                        </div>
+                    </div>
+                `;
             });
 
             tfoot.innerHTML = `
@@ -1284,6 +1571,24 @@
                         <td class="text-right font-bold text-brand-crimson">${formatCurrency(totals.totalExp)}</td>
                     </tr>
                 `;
+
+            mobileHtml += `
+                <div class="mobile-record-card bg-gray-50">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">Grand Total</div>
+                    <div class="mrc-grid grid gap-x-3 gap-y-1.5 text-[11px]">
+                        <div class="flex justify-between"><span class="text-gray-400">91 Sales</span><span class="font-semibold text-emerald-600">${formatLiters(totals.s91)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">95 Sales</span><span class="font-semibold text-red-600">${formatLiters(totals.s95)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Diesel</span><span class="font-semibold text-amber-600">${formatLiters(totals.diesel)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Total Sales</span><span class="font-bold text-brand-gold">${formatLiters(totals.sales)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Salary</span><span class="text-gray-600">${formatCurrency(totals.salary)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Transport</span><span class="text-gray-600">${formatCurrency(totals.transport)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Expenses</span><span class="text-gray-600">${formatCurrency(totals.exp)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Total Exp</span><span class="font-bold text-brand-crimson">${formatCurrency(totals.totalExp)}</span></div>
+                    </div>
+                </div>
+            `;
+
+            mobileCards.innerHTML = mobileHtml;
         }
 
         function renderKPIs(data) {
@@ -1357,6 +1662,18 @@
                     yAxisID: 'y1' }
             ];
             monthlyTrendChart.update();
+
+            // Chart 5: Volume & Expenses Trend (duplicate of Chart 2)
+            monthlyGradeBarChart2.data.labels = labels;
+            monthlyGradeBarChart2.data.datasets = [
+                { label: '91', data: m91, backgroundColor: COLOR_91, order: 2, yAxisID: 'y' },
+                { label: '95', data: m95, backgroundColor: COLOR_95, order: 2, yAxisID: 'y' },
+                { label: 'Diesel', data: md, backgroundColor: COLOR_DIESEL, order: 2, yAxisID: 'y' },
+                { type: 'line', label: 'Total Expenses', data: mte, borderColor: COLOR_EXPENSES_LINE,
+                    backgroundColor: COLOR_EXPENSES_LINE, borderWidth: 2.5, pointRadius: 4, tension: 0.2, order: 1,
+                    yAxisID: 'y1' }
+            ];
+            monthlyGradeBarChart2.update();
         }
 
         // ─── BOOT ───
